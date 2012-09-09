@@ -17,3 +17,5 @@
 //EcommerceMerchantGroupDecorator::set_permission_code("MERCHANTS");
 //===================---------------- END ecommerce_merchant MODULE ----------------===================
 
+Object::add_extension("Product", "MerchantProductDecorator");
+
