@@ -19,9 +19,6 @@ class MerchantAdminDOD extends DataObjectDecorator {
 	}
 
 	function isApprovedMerchantAdmin() {
-		if($this->owner->IsShopAdmin()) {
-			return true;
-		}
 		$groups = MerchantGroupDOD::get_approved_groups();
 		return $this->owner->inGroups($groups);
 	}
