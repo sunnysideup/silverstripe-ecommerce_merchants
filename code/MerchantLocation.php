@@ -105,7 +105,14 @@ class MerchantLocation extends ProductGroup {
 		//add URLSegment first so that parent (SiteTree)
 		//has a change to adjust the URLSegment
 		//if needed.
-		$this->URLSegment = $this->Address2;
+		if($this->exists()) {
+			if($this->City() && $this->City()->Name) {
+				$this->URLSegment = strtolower($this->Address2."-".$this->City()->Name);
+			}
+		}
+		else {
+			$this->URLSegment = strtolower($this->Address2);
+		}
 		parent::onBeforeWrite();
 	}
 
