@@ -102,6 +102,9 @@ class MerchantLocation extends ProductGroup {
 	}
 
 	function onBeforeWrite() {
+		//add URLSegment first so that parent (SiteTree)
+		//has a change to adjust the URLSegment
+		//if needed.
 		$this->URLSegment = $this->Address2;
 		parent::onBeforeWrite();
 	}

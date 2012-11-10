@@ -18,6 +18,12 @@ class MerchantAdminAccountPage extends Page {
 		return ! DataObject::get_one($this->class);
 	}
 
+	function getCMSFields(){
+		$fields = parent::getCMSFields();
+		$fields->addFieldToTab("Root.Content.Notification", new ReadonlyField("NotificationsAreSentTo", "Notifications Are Sent To", Order_Email::get_from_email()));
+		return $fields;
+	}
+
 	static $allowed_children = 'none';
 
 }
@@ -94,8 +100,8 @@ class MerchantAdminAccountPage_Controller extends Page_Controller {
 		$email = new Email(
 			$from = Order_Email::get_from_email(),
 			$to =  Order_Email::get_from_email(),
-			$subject = "$errorString $type Merchant" ,
-			$body = print_r($member, 1)
+			$subject = "A Merchant has  ".$type.": ".$member->getName(),
+			$body = "A Merchant has been ".$type.": ".$member->getName(). ", result: ".$errorString
 		);
 		return $email->send();
 	}

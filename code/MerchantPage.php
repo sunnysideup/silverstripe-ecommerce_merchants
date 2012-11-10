@@ -88,7 +88,7 @@ class MerchantPage extends ProductGroup {
 		parent::onBeforeWrite();
 		$mainGroup = MerchantGroupDOD::get_main_group();
 		if($mainGroup && $this->MerchantGroupCode()) {
-			$merchantGroup = DataObject::get_one("Group", "Code = '".$this->MerchantGroupCode()."'");
+			$merchantGroup = DataObject::get_one("Group", "\"Code\" = '".$this->MerchantGroupCode()."'", false);
 			if(!$merchantGroup) {
 				$merchantGroup = new Group();
 				$merchantGroup->Code = $this->MerchantGroupCode();
@@ -111,7 +111,8 @@ class MerchantPage extends ProductGroup {
 	 */
 	protected function MerchantGroupCode(){
 		if($this->exists()) {
-			return "MerchantGroupCode_".$this->ID;
+			//NOTE: THIS MUST BE A HYPHEN!
+			return "MerchantGroupCode-".$this->ID;
 		}
 	}
 
@@ -119,6 +120,7 @@ class MerchantPage extends ProductGroup {
 	//that the editor groups are added.
 	function onAfterWrite() {
 		parent::onAfterWrite();
+		$mainGroup = MerchantGroupDOD::get_main_group();
 		if($mainGroup && $this->MerchantGroupCode()) {
 			if($this->CanEditType != 'OnlyTheseUsers') {
 				$this->writeToStage('Stage');
