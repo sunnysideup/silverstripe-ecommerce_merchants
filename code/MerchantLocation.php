@@ -102,9 +102,8 @@ class MerchantLocation extends ProductGroup {
 	}
 
 	function onBeforeWrite() {
+		$this->URLSegment = $this->Address2;
 		parent::onBeforeWrite();
-		$this->MetaTitle = $this->Title;
-		$this->MetaDescription = strip_tags($this->Content);
 	}
 
 	function onAfterWrite() {

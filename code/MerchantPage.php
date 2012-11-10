@@ -86,9 +86,45 @@ class MerchantPage extends ProductGroup {
 
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
-		$this->CanEditType = 'OnlyTheseUsers';
+		$mainGroup = MerchantGroupDOD::get_main_group();
+		if($mainGroup && $this->MerchantGroupCode()) {
+			$merchantGroup = DataObject::get_one("Group", "Code = '".$this->MerchantGroupCode()."'");
+			if(!$merchantGroup) {
+				$merchantGroup = new Group();
+				$merchantGroup->Code = $this->MerchantGroupCode();
+				$merchantGroup->ParentID = $mainGroup->ID;
+			}
+			$merchantGroup->Title = $this->Title;
+			$merchantGroup->write();
+			//adding permissions
+			$this->CanEditType = 'OnlyTheseUsers';
+			$existingEditors = $this->EditorGroups();
+			$existingEditors->add($merchantGroup);
+		}
 		$this->MetaTitle = $this->Title;
 		$this->MetaDescription = strip_tags($this->Content);
+	}
+
+	/**
+	 * This is used to have a set Merchant Group Code
+	 * @return String
+	 */
+	protected function MerchantGroupCode(){
+		if($this->exists()) {
+			return "MerchantGroupCode_".$this->ID;
+		}
+	}
+
+	//make sure that it is saved two times, the first time, just to be sure
+	//that the editor groups are added.
+	function onAfterWrite() {
+		parent::onAfterWrite();
+		if($mainGroup && $this->MerchantGroupCode()) {
+			if($this->CanEditType != 'OnlyTheseUsers') {
+				$this->writeToStage('Stage');
+				$this->Publish('Stage', 'Live');
+			}
+		}
 	}
 
 	static function get_image_extensions() {
