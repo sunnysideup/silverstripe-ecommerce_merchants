@@ -11,7 +11,7 @@ class MerchantLocation extends ProductGroup {
 
 	static $db = array(
 		'Address' => 'Varchar(255)',
-		'Address2' => 'Varchar(255)',
+		'Address2' => 'Varchar(255)', // used as suburb / city (e.g. Brooklynn), used for locating on map.
 		'PostalCode' => 'Varchar(30)',
 		'Phone' => 'Varchar(50)',
 		'OpeningHours' => 'Text',
@@ -19,7 +19,7 @@ class MerchantLocation extends ProductGroup {
 	);
 
 	static $has_one = array(
-		'City' => 'City',
+		'City' => 'City', //main city for searching purposes, could be used as a region. - e.g. New York
 		'AdditionalImage1' => 'Image',
 		'AdditionalImage2' => 'Image',
 		'AdditionalImage3' => 'Image',
@@ -105,14 +105,7 @@ class MerchantLocation extends ProductGroup {
 		//add URLSegment first so that parent (SiteTree)
 		//has a change to adjust the URLSegment
 		//if needed.
-		if($this->exists()) {
-			if($this->City() && $this->City()->Name) {
-				$this->URLSegment = strtolower($this->Address2."-".$this->City()->Name);
-			}
-		}
-		else {
-			$this->URLSegment = strtolower($this->Address2);
-		}
+		$this->URLSegment = strtolower($this->Address2);
 		parent::onBeforeWrite();
 	}
 

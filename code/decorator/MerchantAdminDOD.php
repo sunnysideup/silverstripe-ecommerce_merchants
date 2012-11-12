@@ -37,7 +37,12 @@ class MerchantAdminDOD extends DataObjectDecorator {
 	}
 
 	static function get_registration_fields() {
-		return self::get_edit_fields(array('Merchant' => _t('MerchantAdminDOD.MERCHANT', 'Merchant'), 'Website' => _t('MerchantAdminDOD.WEBSITE', 'Website')));
+		return self::get_edit_fields(
+			array(
+				'Merchant' => _t('MerchantAdminDOD.MERCHANT', 'Merchant'),
+				'Website' => _t('MerchantAdminDOD.WEBSITE', 'Website')
+			)
+		);
 	}
 
 	static function get_edit_fields($extraFields = null) {
