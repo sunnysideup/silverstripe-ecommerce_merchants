@@ -24,12 +24,17 @@ class MerchantAdminDOD extends DataObjectDecorator {
 	}
 
 	function AdminHomePage() {
-		if($this->isApprovedMerchantAdmin()) {
-			$pages = DataObject::get('MerchantPage');
-			if($pages) {
-				foreach($pages as $page) {
-					if($page->canFrontEndEdit($this->owner)) {
-						return $page;
+		if($this->owner->IsAdmin() || $this->owner->IsShopAdmin()) {
+			//do nothing
+		}
+		else {
+			if($this->isApprovedMerchantAdmin()) {
+				$pages = DataObject::get('MerchantPage');
+				if($pages) {
+					foreach($pages as $page) {
+						if($page->canFrontEndEdit($this->owner)) {
+							return $page;
+						}
 					}
 				}
 			}
