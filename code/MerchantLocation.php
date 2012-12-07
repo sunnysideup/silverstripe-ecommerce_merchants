@@ -78,13 +78,6 @@ class MerchantLocation extends ProductGroup {
 		return $fields;
 	}
 
-	function Image() {
-		$parent = DataObject::get_by_id('MerchantPage', $this->ParentID);
-		if($parent && $parent->exists()) {
-			return $parent->Image();
-		}
-	}
-
 	function currentInitialProducts() {
 		$products = $this->AlsoShowProducts();
 		foreach($products as $product) {
@@ -106,6 +99,12 @@ class MerchantLocation extends ProductGroup {
 		//has a change to adjust the URLSegment
 		//if needed.
 		$this->URLSegment = strtolower($this->Address2);
+		if(!$this->ImageID) {
+			$parent = DataObject::get_by_id('MerchantPage', $this->ParentID);
+			if($parent && $parent->exists()) {
+				$this->ImageID = $parent->ImageID;
+			}
+		}
 		parent::onBeforeWrite();
 	}
 
