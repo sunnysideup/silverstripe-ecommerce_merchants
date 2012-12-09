@@ -55,19 +55,20 @@ class MerchantLocation extends ProductGroup {
 		$cities = DataObject::get('City');
 		$cities = $cities->map('ID', 'Name');
 		$fields->addFieldsToTab('Root.Content.Images', array(
+			new ImageField("Image"),
 			new ImageField("AdditionalImage1"),
 			new ImageField("AdditionalImage2"),
 			new ImageField("AdditionalImage3"),
 			new ImageField("AdditionalImage4")
 		));
 		$fields->addFieldsToTab('Root.Content.Main', array(
-			new CheckboxField('Featured', 'Is featured ?'),
-			new TextField('Address'),
-			new TextField('PostalCode', 'Postal Code'),
+			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Product')),
+			new TextField('Address', _t('MerchantLocation.ADDRESS', 'Address')),
+			new TextField('PostalCode', _t('MerchantLocation.POSTALCODE', 'Postal Code')),
 			new TextField('Address2', 'Plaats'),
-			new DropdownField('CityID', 'City', $cities, '', null, ''),
-			new TextField('Phone'),
-			new TextareaField('OpeningHours', 'Opening Hours')
+			new DropdownField('CityID', _t('MerchantLocation.CITY', 'City'), $cities, '', null, ''),
+			new TextField('Phone', _t('MerchantLocation.PHONE', 'Phone')),
+			new TextareaField('OpeningHours', _t('MerchantLocation.OPENINGHOURS', 'Opening hours'))
 		));
 		if($this->ID) {
 			$products = DataObject::get('MerchantProduct', "ParentID = $this->ParentID");
@@ -127,7 +128,8 @@ class MerchantLocation extends ProductGroup {
 		$cities = $cities->map('ID', 'Name');
 		$fields = new FieldSet(
 			new TextField('Title', $this->fieldLabel('Title')),
-			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Is featured ?')),
+			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Product')),
+			new CheckboxField('ShowInSearch', _t('MerchantLocation.SHOW_IN_SEARCH', 'Show on website (untick to hide altogether)')),
 			new TextField('Address', _t('OrderAddress.ADDRESS', 'Address')),
 			new TextField('Address2', ''),
 			new TextField('PostalCode', _t('OrderAddress.POSTALCODE', 'Postal Code')),
@@ -136,10 +138,11 @@ class MerchantLocation extends ProductGroup {
 			new TextareaField('OpeningHours', _t('MerchantLocation.OPENING_HOURS', 'Opening Hours')),
 			//new HeaderField('ImageHeader', _t('MerchantLocation.IMAGES', 'Afbeeldingen')),
 			new HeaderField('Images', _t('MerchantLocation.IMAGES', 'Images')),
-			new SimpleImageField('AdditionalImage1', _t('MerchantLocation.IMAGE', 'Afbeelding')." 1"),
-			new SimpleImageField('AdditionalImage2', _t('MerchantLocation.IMAGE', 'Afbeelding')." 2"),
-			new SimpleImageField('AdditionalImage3', _t('MerchantLocation.IMAGE', 'Afbeelding')." 3"),
-			new SimpleImageField('AdditionalImage4', _t('MerchantLocation.IMAGE', 'Afbeelding')." 4")
+			new SimpleImageField('Image', _t('MerchantLocation.IMAGE', 'Afbeelding')." 1"),
+			new SimpleImageField('AdditionalImage1', _t('MerchantLocation.IMAGE', 'Afbeelding')." 2"),
+			new SimpleImageField('AdditionalImage2', _t('MerchantLocation.IMAGE', 'Afbeelding')." 3"),
+			new SimpleImageField('AdditionalImage3', _t('MerchantLocation.IMAGE', 'Afbeelding')." 4"),
+			new SimpleImageField('AdditionalImage4', _t('MerchantLocation.IMAGE', 'Afbeelding')." 5")
 		);
 		$requiredFields = new RequiredFields('Title', 'Address', 'CityID');
 		return array($fields, $requiredFields);
@@ -372,7 +375,10 @@ class MerchantLocation_Controller extends ProductGroup_Controller {
 
 	function EditForm() {
 		list($fields, $requiredFields) = $this->getFrontEndFields();
-		$actions = new FieldSet(new FormAction('saveEditForm', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details')), new FormAction('disableLocation', _t('ModelAdmin.DELETE', 'Delete')));
+		$actions = new FieldSet(
+			new FormAction('saveEditForm', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details'))
+			//new FormAction('disableLocation', _t('ModelAdmin.DELETE', 'Delete'))
+		);
 		$form = new Form($this, 'EditForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($this);
 		return $form;

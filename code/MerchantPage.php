@@ -157,7 +157,9 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 	function MemberForm() {
 		$member = Member::currentUser();
 		list($fields, $requiredFields) = MerchantAdminDOD::get_edit_fields();
-		$actions = new FieldSet(new FormAction('saveMemberForm', _t('MerchantPage_Controller.SAVE_PERSONAL_DETAILS', 'Save My Personal Details')));
+		$actions = new FieldSet(
+			new FormAction('saveMemberForm', _t('MerchantPage_Controller.SAVE_PERSONAL_DETAILS', 'Save My Personal Details'))
+		);
 		$form = new Form($this, 'MemberForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($member);
 		if($member && $member->Password ){
@@ -185,15 +187,17 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 
 	function MerchantPageForm() {
 		$fields = new FieldSet(
-			new TextField('Website', _t('MerchantAdminDOD.WEBSITE', 'Website')),
-			new TextareaField('Content', _t('MerchantProduct.DESCRIPTION', 'Description')),
+			new TextField('Website', _t('MerchantPage.WEBSITE', 'Website')),
+			new TextareaField('Content', _t('MerchantPage.DESCRIPTION', 'Description')),
 			$imageField = new SimpleImageField('Image', _t('MerchantPage.LOGO', 'Logo'), null, null, null, 'Logos')
 		);
 		/*$validator = $imageField->getValidator();
 		$validator->setAllowedExtensions(MerchantPage::get_image_extensions());
 		$imageField->setValidator($validator);*/
 		$requiredFields = new RequiredFields('Website', 'Description');
-		$actions = new FieldSet(new FormAction('saveMerchantPageForm', _t('MerchantPage_Controller.SAVE_STORE_DETAILS', 'Save My Store Details')));
+		$actions = new FieldSet(
+			new FormAction('saveMerchantPageForm', _t('MerchantPage_Controller.SAVE_STORE_DETAILS', 'Save My Store Details'))
+		);
 		$form = new Form($this, 'MerchantPageForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($this);
 		return $form;
@@ -218,7 +222,9 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 	function AddLocationForm() {
 		$singleton = Object::create('MerchantLocation');
 		list($fields, $requiredFields) = $singleton->getFrontEndFields();
-		$actions = new FieldSet(new FormAction('saveAddLocationForm', _t('MerchantPage_Controller.ADD_NEW_STORE', 'Add New Store')));
+		$actions = new FieldSet(
+			new FormAction('saveAddLocationForm', _t('MerchantPage_Controller.ADD_NEW_STORE', 'Add New Store'))
+		);
 		return new Form($this, 'AddLocationForm', $fields, $actions, $requiredFields);
 	}
 

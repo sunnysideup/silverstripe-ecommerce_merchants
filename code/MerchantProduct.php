@@ -71,15 +71,15 @@ class MerchantProduct extends Product {
 		$categories = $categories->map('ID', 'Name');
 		$locations = $parent->Locations();
 		$fields = new FieldSet(
-			new TextField('Title', $this->fieldLabel('Title')),
-			new CheckboxField('FeaturedProduct', _t('MerchantLocation.IS_FEATURED', 'Is featured ?')),
-			new HiddenField('AllowPurchase', '', true),
+			new TextField('Title', _t('MerchantProduct.TITLE', 'Product name')),
+			new CheckboxField('FeaturedProduct', _t('MerchantProduct.IS_FEATURED', 'Featured')),
+			new CheckboxField('AllowInSearch', _t('MerchantLocation.ALLOW_PURCHASE', 'For sale')),
 			new TextareaField('Content', _t('MerchantProduct.DESCRIPTION', 'Description')),
 			new NumericField('Price', _t('Product.PRICE', 'Price')),
 			new TextField('InternalItemID', _t('Product.CODE', 'Product Code')),
 			new CheckboxSetField('Categories', _t('Category.PLURALNAME', 'Categories'), $categories),
 			new CheckboxSetField('ProductGroups', _t('MerchantLocation.PLURAL_NICKNAME', 'Locations'), $locations),
-			$imageField = new SimpleImageField('Image', _t('Image.SINGULARNAME', 'Image'), null, null, null, 'Products')
+			$imageField = new SimpleImageField('Image', _t('MerchantProduct.IMAGE', 'Image'), null, null, null, 'Products')
 		);
 		/*$validator = $imageField->getValidator();
 		$validator->setAllowedExtensions(MerchantPage::get_image_extensions());
@@ -100,7 +100,10 @@ class MerchantProduct_Controller extends Product_Controller {
 
 	function EditForm() {
 		list($fields, $requiredFields) = $this->getFrontEndFields();
-		$actions = new FieldSet(new FormAction('saveeditform', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details')), new FormAction('removeProduct', _t('ModelAdmin.DELETE', 'Delete')));
+		$actions = new FieldSet(
+			new FormAction('saveeditform', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details'))
+			//new FormAction('removeProduct', _t('ModelAdmin.DELETE', 'Delete'))
+		);
 		$form = new Form($this, 'EditForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($this);
 		return $form;
