@@ -55,17 +55,17 @@ class MerchantLocation extends ProductGroup {
 		$cities = DataObject::get('City');
 		$cities = $cities->map('ID', 'Name');
 		$fields->addFieldsToTab('Root.Content.Images', array(
-			new ImageField("Image"),
-			new ImageField("AdditionalImage1"),
-			new ImageField("AdditionalImage2"),
-			new ImageField("AdditionalImage3"),
-			new ImageField("AdditionalImage4")
+			new ImageField("Image", _t('MerchantLocation.IMAGE', "Image").' 1',
+			new ImageField("AdditionalImage1", _t('MerchantLocation.IMAGE', "Image").' 2'),
+			new ImageField("AdditionalImage2", _t('MerchantLocation.IMAGE', "Image").' 3'),
+			new ImageField("AdditionalImage3", _t('MerchantLocation.IMAGE', "Image").' 4'),
+			new ImageField("AdditionalImage4", _t('MerchantLocation.IMAGE', "Image").' 5')
 		));
 		$fields->addFieldsToTab('Root.Content.Main', array(
-			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Product')),
+			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Location')),
 			new TextField('Address', _t('MerchantLocation.ADDRESS', 'Address')),
+			new TextField('Address2', _t('MerchantLocation.ADDRESS2', 'Address Line 2')),
 			new TextField('PostalCode', _t('MerchantLocation.POSTALCODE', 'Postal Code')),
-			new TextField('Address2', 'Plaats'),
 			new DropdownField('CityID', _t('MerchantLocation.CITY', 'City'), $cities, '', null, ''),
 			new TextField('Phone', _t('MerchantLocation.PHONE', 'Phone')),
 			new TextareaField('OpeningHours', _t('MerchantLocation.OPENINGHOURS', 'Opening hours'))
@@ -130,19 +130,18 @@ class MerchantLocation extends ProductGroup {
 			new TextField('Title', $this->fieldLabel('Title')),
 			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Product')),
 			new CheckboxField('ShowInSearch', _t('MerchantLocation.SHOW_IN_SEARCH', 'Show on website (untick to hide altogether)')),
-			new TextField('Address', _t('OrderAddress.ADDRESS', 'Address')),
-			new TextField('Address2', ''),
-			new TextField('PostalCode', _t('OrderAddress.POSTALCODE', 'Postal Code')),
+			new TextField('Address', _t('MerchantLocation.ADDRESS', 'Address')),
+			new TextField('Address2',  _t('MerchantLocation.ADDRESS2', 'Address 2')),
+			new TextField('PostalCode', _t('MerchantLocation.POSTALCODE', 'Postal Code')),
 			new DropdownField('CityID', _t('City.SINGULARNAME', 'City'), $cities, '', null, ''),
-			new TextField('Phone', _t('OrderAddress.PHONE', 'Phone')),
-			new TextareaField('OpeningHours', _t('MerchantLocation.OPENING_HOURS', 'Opening Hours')),
-			//new HeaderField('ImageHeader', _t('MerchantLocation.IMAGES', 'Afbeeldingen')),
+			new TextField('Phone', _t('MerchantLocation.PHONE', 'Phone')),
+			new TextareaField('OpeningHours', _t('MerchantLocation.OPENINGHOURS', 'Opening Hours')),
 			new HeaderField('Images', _t('MerchantLocation.IMAGES', 'Images')),
-			new SimpleImageField('Image', _t('MerchantLocation.IMAGE', 'Afbeelding')." 1"),
-			new SimpleImageField('AdditionalImage1', _t('MerchantLocation.IMAGE', 'Afbeelding')." 2"),
-			new SimpleImageField('AdditionalImage2', _t('MerchantLocation.IMAGE', 'Afbeelding')." 3"),
-			new SimpleImageField('AdditionalImage3', _t('MerchantLocation.IMAGE', 'Afbeelding')." 4"),
-			new SimpleImageField('AdditionalImage4', _t('MerchantLocation.IMAGE', 'Afbeelding')." 5")
+			new SimpleImageField('Image', _t('MerchantLocation.IMAGE', 'IMAGE')." 1"),
+			new SimpleImageField('AdditionalImage1', _t('MerchantLocation.IMAGE', 'IMAGE')." 2"),
+			new SimpleImageField('AdditionalImage2', _t('MerchantLocation.IMAGE', 'IMAGE')." 3"),
+			new SimpleImageField('AdditionalImage3', _t('MerchantLocation.IMAGE', 'IMAGE')." 4"),
+			new SimpleImageField('AdditionalImage4', _t('MerchantLocation.IMAGE', 'IMAGE')." 5")
 		);
 		$requiredFields = new RequiredFields('Title', 'Address', 'CityID');
 		return array($fields, $requiredFields);

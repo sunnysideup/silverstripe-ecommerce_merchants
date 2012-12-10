@@ -21,15 +21,15 @@ class MerchantProduct extends Product {
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->removeByName('AlsoShowHere');
-		$fields->replaceField('Content', new TextareaField('Content'));
+		$fields->replaceField('Content', new TextareaField('Content', _t('MerchantProduct.CONTENT', 'Content')));
 		$categories = DataObject::get('Category');
 		$categories = $categories->map('ID', 'Name');
-		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('Categories', 'Categories', $categories));
+		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('Categories', _t('MerchantProduct.CATEGORIES', 'Categories'), $categories));
 		if($this->ID) {
 			$parent = $this->Parent();
 			$locations = $parent->Locations();
 			if($locations) {
-				$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('ProductGroups', 'Locations', $locations));
+				$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('ProductGroups', _t('MerchantProduct.PRODUCTGROUPS', 'Locations'), $locations));
 			}
 		}
 		return $fields;
@@ -72,13 +72,12 @@ class MerchantProduct extends Product {
 		$locations = $parent->Locations();
 		$fields = new FieldSet(
 			new TextField('Title', _t('MerchantProduct.TITLE', 'Product name')),
-			new CheckboxField('FeaturedProduct', _t('MerchantProduct.IS_FEATURED', 'Featured')),
-			new CheckboxField('AllowInSearch', _t('MerchantLocation.ALLOW_PURCHASE', 'For sale')),
-			new TextareaField('Content', _t('MerchantProduct.DESCRIPTION', 'Description')),
-			new NumericField('Price', _t('Product.PRICE', 'Price')),
-			new TextField('InternalItemID', _t('Product.CODE', 'Product Code')),
-			new CheckboxSetField('Categories', _t('Category.PLURALNAME', 'Categories'), $categories),
-			new CheckboxSetField('ProductGroups', _t('MerchantLocation.PLURAL_NICKNAME', 'Locations'), $locations),
+			new CheckboxField('AllowInSearch', _t('MerchantProduct.ALLOW_PURCHASE', 'For sale')),
+			new TextareaField('Content', _t('MerchantProduct.CONTENT', 'Description')),
+			new NumericField('Price', _t('MerchantProduct.PRICE', 'Price')),
+			new TextField('InternalItemID', _t('MerchantProduct.CODE', 'Product Code')),
+			new CheckboxSetField('Categories', _t('MerchantProduct.CATEGORIES', 'Categories'), $categories),
+			new CheckboxSetField('ProductGroups', _t('MerchantProduct.PRODUCTGROUPS', 'Locations'), $locations),
 			$imageField = new SimpleImageField('Image', _t('MerchantProduct.IMAGE', 'Image'), null, null, null, 'Products')
 		);
 		/*$validator = $imageField->getValidator();

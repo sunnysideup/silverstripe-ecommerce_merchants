@@ -41,8 +41,8 @@ class MerchantPage extends ProductGroup {
 			$fields->removeByName($name);
 		}
 		$fields->addFieldToTab('Root.Content.Main', new TextField('Website'), 'Content');
-		$fields->replaceField('Content', new TextareaField('Content'));
-		$fields->addFieldToTab('Root.Content.Logo', new ImageField('Image', '', null, null, null, 'Logos'));
+		$fields->replaceField('Content', new TextareaField('Content', _t('MerchantPage.CONTENT', 'Content')));
+		$fields->addFieldToTab('Root.Content.Logo', new ImageField('Image', _t('MerchantPage.LOGO', 'Logo'), null, null, null, 'Logos'));
 		return $fields;
 	}
 
@@ -188,7 +188,7 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 	function MerchantPageForm() {
 		$fields = new FieldSet(
 			new TextField('Website', _t('MerchantPage.WEBSITE', 'Website')),
-			new TextareaField('Content', _t('MerchantPage.DESCRIPTION', 'Description')),
+			new TextareaField('Content', _t('MerchantPage.CONTENT', 'Content')),
 			$imageField = new SimpleImageField('Image', _t('MerchantPage.LOGO', 'Logo'), null, null, null, 'Logos')
 		);
 		/*$validator = $imageField->getValidator();
