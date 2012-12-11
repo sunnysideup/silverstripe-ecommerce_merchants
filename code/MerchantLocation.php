@@ -54,13 +54,16 @@ class MerchantLocation extends ProductGroup {
 		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
 		$cities = DataObject::get('City');
 		$cities = $cities->map('ID', 'Name');
-		$fields->addFieldsToTab('Root.Content.Images', array(
-			new ImageField("Image", _t('MerchantLocation.IMAGE', "Image").' 1',
-			new ImageField("AdditionalImage1", _t('MerchantLocation.IMAGE', "Image").' 2'),
-			new ImageField("AdditionalImage2", _t('MerchantLocation.IMAGE', "Image").' 3'),
-			new ImageField("AdditionalImage3", _t('MerchantLocation.IMAGE', "Image").' 4'),
-			new ImageField("AdditionalImage4", _t('MerchantLocation.IMAGE', "Image").' 5')
-		));
+		$fields->addFieldsToTab(
+			'Root.Content.Images',
+			array(
+				new ImageField("Image", _t('MerchantLocation.IMAGE', "Image").' 1'),
+				new ImageField("AdditionalImage1", _t('MerchantLocation.IMAGE', "Image").' 2'),
+				new ImageField("AdditionalImage2", _t('MerchantLocation.IMAGE', "Image").' 3'),
+				new ImageField("AdditionalImage3", _t('MerchantLocation.IMAGE', "Image").' 4'),
+				new ImageField("AdditionalImage4", _t('MerchantLocation.IMAGE', "Image").' 5')
+			)
+		);
 		$fields->addFieldsToTab('Root.Content.Main', array(
 			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Location')),
 			new TextField('Address', _t('MerchantLocation.ADDRESS', 'Address')),
