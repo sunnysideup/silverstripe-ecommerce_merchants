@@ -22,10 +22,10 @@ class AllMerchantsPage extends ProductGroup {
 	static $hide_ancestor = 'ProductGroup';
 
 	static $singular_name = 'All Merchants Page';
-	function i18n_singular_name() {return _t('AllMerchantsPage.SINGULARNAME', self::$singular_name);}
+		function i18n_singular_name() {return _t('AllMerchantsPage.SINGULARNAME', self::$singular_name);}
 
 	public static $plural_name = 'All Merchants Pages';
-	function i18n_plural_name() {return _t('AllMerchantsPage.PLURALNAME', self::$plural_name);}
+		function i18n_plural_name() {return _t('AllMerchantsPage.PLURALNAME', self::$plural_name);}
 
 	function getCMSFields() {
 		$fields = parent::getCMSFields();

@@ -26,8 +26,10 @@ class Category extends DataObject {
 	);
 
 	static $singular_name = 'Category';
+		function i18n_singular_name() {return _t('Category.SINGULARNAME', self::$singular_name);}
 
-	static $plural_name = 'Categories';
+	public static $plural_name = 'Categories';
+		function i18n_plural_name() {return _t('Category.PLURALNAME', self::$plural_name);}
 
 	function Link() {
 		$page = DataObject::get_one('AllMerchantsPage');
@@ -54,7 +56,7 @@ class Category extends DataObject {
 		else {
 			return $this->Title;
 		}
-	} 
+	}
 
 
 	function getCode(){

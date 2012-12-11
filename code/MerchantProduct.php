@@ -14,6 +14,12 @@ class MerchantProduct extends Product {
 
 	static $can_be_root = false;
 
+	static $singular_name = 'Product';
+		function i18n_singular_name() {return _t('MerchantProduct.SINGULARNAME', self::$singular_name);}
+
+	public static $plural_name = 'Products';
+		function i18n_plural_name() {return _t('MerchantProduct.PLURALNAME', self::$plural_name);}
+
 	function canEdit($member = null) {
 		return $this->canFrontEndEdit($member);
 	}
@@ -72,7 +78,7 @@ class MerchantProduct extends Product {
 		$locations = $parent->Locations();
 		$fields = new FieldSet(
 			new TextField('Title', _t('MerchantProduct.TITLE', 'Product name')),
-			new CheckboxField('AllowInSearch', _t('MerchantProduct.ALLOW_PURCHASE', 'For sale')),
+			new CheckboxField('AllowPurchase', _t('MerchantProduct.ALLOW_PURCHASE', 'For sale')),
 			new TextareaField('Content', _t('MerchantProduct.CONTENT', 'Description')),
 			new NumericField('Price', _t('MerchantProduct.PRICE', 'Price')),
 			new TextField('InternalItemID', _t('MerchantProduct.CODE', 'Product Code')),

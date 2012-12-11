@@ -3,6 +3,12 @@
 class MerchantAdminAccountPage extends Page {
 
 
+	static $singular_name = 'Merchant Account Page';
+		function i18n_singular_name() {return _t('MerchantAdminAccountPage.SINGULARNAME', self::$singular_name);}
+
+	public static $plural_name = 'Merchant Account Pages';
+		function i18n_plural_name() {return _t('MerchantAdminAccountPage.PLURALNAME', self::$plural_name);}
+
 	/**
 	 * icons for the page
 	 * @var String

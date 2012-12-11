@@ -8,7 +8,10 @@ class City extends DataObject {
 	);
 
 	static $singular_name = 'City';
-	static $plural_name = 'Cities';
+		function i18n_singular_name() {return _t('City.SINGULARNAME', self::$singular_name);}
+
+	public static $plural_name = 'Cities';
+		function i18n_plural_name() {return _t('City.PLURALNAME', self::$plural_name);}
 
 	function Link() {
 		$page = DataObject::get_one('AllMerchantsPage');
