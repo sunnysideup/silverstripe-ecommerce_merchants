@@ -378,8 +378,8 @@ class MerchantLocation_Controller extends ProductGroup_Controller {
 	function EditForm() {
 		list($fields, $requiredFields) = $this->getFrontEndFields();
 		$actions = new FieldSet(
-			new FormAction('saveEditForm', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details'))
-			//new FormAction('disableLocation', _t('ModelAdmin.DELETE', 'Delete'))
+			new FormAction('saveEditForm', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details')),
+			new FormAction('disableLocation', _t('ModelAdmin.DELETE', 'Delete'))
 		);
 		$form = new Form($this, 'EditForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($this);

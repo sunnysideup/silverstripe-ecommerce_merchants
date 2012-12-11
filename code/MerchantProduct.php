@@ -106,8 +106,8 @@ class MerchantProduct_Controller extends Product_Controller {
 	function EditForm() {
 		list($fields, $requiredFields) = $this->getFrontEndFields();
 		$actions = new FieldSet(
-			new FormAction('saveeditform', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details'))
-			//new FormAction('removeProduct', _t('ModelAdmin.DELETE', 'Delete'))
+			new FormAction('saveeditform', _t('MerchantAdminAccountPage_Controller.SAVE_DETAILS', 'Save Details')),
+			new FormAction('removeProduct', _t('ModelAdmin.DELETE', 'Delete'))
 		);
 		$form = new Form($this, 'EditForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($this);
