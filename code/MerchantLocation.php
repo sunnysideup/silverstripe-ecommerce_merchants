@@ -131,7 +131,7 @@ class MerchantLocation extends ProductGroup {
 		$cities = $cities->map('ID', 'Name');
 		$fields = new FieldSet(
 			new TextField('Title', $this->fieldLabel('Title')),
-			new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Product')),
+			//new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Location')),
 			new CheckboxField('ShowInSearch', _t('MerchantLocation.SHOW_IN_SEARCH', 'Show on website (untick to hide altogether)')),
 			new TextField('Address', _t('MerchantLocation.ADDRESS', 'Address')),
 			new TextField('Address2',  _t('MerchantLocation.ADDRESS2', 'Address 2')),
