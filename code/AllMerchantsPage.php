@@ -120,13 +120,13 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		if($filter) {
 			$filters[] = $filter;
 		}
-		$filter = implode(' AND ', $filters);
 		if($products === false) {
 			$products = $this->Products();
 		}
 		if($products) {
 			$join = 'INNER JOIN Product_ProductGroups ON SiteTree_Live.ID = ProductGroupID';
-			$filter = 'ProductID IN (' . implode(',', $products->map('ID', 'ID')) . ')';
+			$filters[] = 'ProductID IN (' . implode(',', $products->map('ID', 'ID')) . ')';
+			$filter = "(".implode(') AND (', $filters).")";
 			return DataObject::get('MerchantLocation', $filter, 'RAND() ASC', $join);
 		}
 	}
