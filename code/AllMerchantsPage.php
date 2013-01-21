@@ -56,6 +56,7 @@ class AllMerchantsPage extends ProductGroup {
 class AllMerchantsPage_Controller extends ProductGroup_Controller {
 
 	static $category_param = 'category';
+
 	static $city_param = 'city';
 
 	function init() {
@@ -68,10 +69,55 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		$cities = $cities->map();
 		$categories = DataObject::get('Category');
 		$categories = $categories->map('ID', 'getFilterFormHTMLTitle');
+		if(isset($_REQUEST[self::$city_param])) {
+			$cityID = $_REQUEST[self::$city_param];
+			$cityArray = $_REQUEST[self::$city_param];
+		}
+		else {
+			$cityID = 0;
+			$cityArray = null;
+		}
+		if(isset($_REQUEST[self::$category_param])) {
+			$categoryID = $_REQUEST[self::$category_param];
+			$categoryArray = $_REQUEST[self::$category_param];
+		}
+		else {
+			$categoryID = 0;
+			$categoryArray = null;
+		}
+
 		$fields = new FieldSet(
-			new CheckboxSetField('City', 'Selecteer locatie', $cities, isset($_REQUEST[self::$city_param]) ? $_REQUEST[self::$city_param] : null),
-			new CheckboxSetField('Category', 'Selecteer categorie', $categories, isset($_REQUEST[self::$category_param]) ? $_REQUEST[self::$category_param] : null)
+			new CheckboxSetField('City', 'Selecteer locatie', $cities, $cityArray),
+			new CheckboxSetField('Category', 'Selecteer categorie', $categories, $categoryArray)
 		);
+		//reset City Form (needed to avoid discrepancies when using the Back Button)
+		Requirements::customScript("
+			jQuery(document).ready(
+				function() {
+					jQuery(\"#City input\").each(
+							function(i, el){
+								if($cityID > 0 && jQuery(el).val() == $cityID) {
+									jQuery(el).attr(\"checked\",\"checked\");
+								}
+								else {
+									jQuery(el).removeAttr(\"checked\");
+								}
+							}
+					);
+					jQuery(\"#Category input\").each(
+							function(i, el){
+								if($categoryID > 0 && jQuery(el).val() == $categoryID) {
+									jQuery(el).attr(\"checked\",\"checked\");
+								}
+								else {
+									jQuery(el).removeAttr(\"checked\");
+								}
+							}
+					);
+
+				}
+			);
+		", "CityAndCategoryLink");
 		$actions = new FieldSet(new FormAction('filter', _t('AllMerchantsPage_Controller.FILTER', 'Filter')));
 		return new Form($this, 'FilterForm', $fields, $actions);
 	}

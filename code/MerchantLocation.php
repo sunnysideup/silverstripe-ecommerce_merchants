@@ -375,6 +375,10 @@ class MerchantLocation_Controller extends ProductGroup_Controller {
 		return array();
 	}
 
+	function AllMerchantsPage(){
+		return DataObject::get_one("AllMerchantsPage");
+	}
+
 	function EditForm() {
 		list($fields, $requiredFields) = $this->getFrontEndFields();
 		$actions = new FieldSet(
