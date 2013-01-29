@@ -2,10 +2,10 @@
 
 class MerchantPage extends ProductGroup {
 
-	/**
-	 * icons for the page
-	 * @var String
-	 */
+	/****************************************
+	 * Model Setup
+	 ****************************************/
+
 	public static $icon = "ecommerce_merchants/images/MerchantPage";
 
 	static $db = array(
@@ -19,6 +19,7 @@ class MerchantPage extends ProductGroup {
 	static $default_parent = 'AllMerchantsPage';
 
 	static $allowed_children = array('MerchantLocation', 'MerchantProduct');
+
 	static $default_child = 'MerchantProduct';
 
 	static $hide_ancestor = 'ProductGroup';
@@ -26,14 +27,18 @@ class MerchantPage extends ProductGroup {
 	static $can_be_root = false;
 
 	static $singular_name = 'Merchant Page';
-	function i18n_singular_name() {return _t('MerchantPage.SINGULARNAME', self::$singular_name);}
+		function i18n_singular_name() {return _t('MerchantPage.SINGULARNAME', self::$singular_name);}
 
 	static $plural_name = 'Merchant Pages';
-	function i18n_plural_name() {return _t('MerchantPage.PLURALNAME', self::$plural_name);}
+		function i18n_plural_name() {return _t('MerchantPage.PLURALNAME', self::$plural_name);}
 
 	function canEdit($member = null) {
 		return $this->canFrontEndEdit($member);
 	}
+
+	/****************************************
+	 * CRUD Forms
+	 ****************************************/
 
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
@@ -46,8 +51,16 @@ class MerchantPage extends ProductGroup {
 		return $fields;
 	}
 
+	static function get_image_extensions() {
+		return array('jpg', 'gif', 'png', 'jpeg');
+	}
+
+	/****************************************
+	 * Controller like methods
+	 ****************************************/
+
 	function Locations() {
-		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID AND " . MerchantLocation::$active_filter);
+		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID AND " . MerchantLocation::get_active_filter());
 	}
 
 	function Products() {
@@ -84,6 +97,21 @@ class MerchantPage extends ProductGroup {
 		}
 	}
 
+	/**
+	 * This is used to have a set Merchant Group Code
+	 * @return String
+	 */
+	protected function MerchantGroupCode(){
+		if($this->exists()) {
+			//NOTE: THIS MUST BE A HYPHEN!
+			return "MerchantGroupCode-".$this->ID;
+		}
+	}
+
+	/****************************************
+	 * Read and Write
+	 ****************************************/
+
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		$mainGroup = MerchantGroupDOD::get_main_group();
@@ -105,17 +133,6 @@ class MerchantPage extends ProductGroup {
 		$this->MetaDescription = strip_tags($this->Content);
 	}
 
-	/**
-	 * This is used to have a set Merchant Group Code
-	 * @return String
-	 */
-	protected function MerchantGroupCode(){
-		if($this->exists()) {
-			//NOTE: THIS MUST BE A HYPHEN!
-			return "MerchantGroupCode-".$this->ID;
-		}
-	}
-
 	//make sure that it is saved two times, the first time, just to be sure
 	//that the editor groups are added.
 	function onAfterWrite() {
@@ -129,9 +146,6 @@ class MerchantPage extends ProductGroup {
 		}
 	}
 
-	static function get_image_extensions() {
-		return array('jpg', 'gif', 'png', 'jpeg');
-	}
 }
 
 class MerchantPage_Controller extends ProductGroup_Controller {
@@ -154,11 +168,15 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 		}
 	}
 
+	/****************************************
+	 * Forms: Member Form
+	 ****************************************/
+
 	function MemberForm() {
 		$member = Member::currentUser();
 		list($fields, $requiredFields) = MerchantAdminDOD::get_edit_fields();
 		$actions = new FieldSet(
-			new FormAction('saveMemberForm', _t('MerchantPage_Controller.SAVE_PERSONAL_DETAILS', 'Save My Personal Details'))
+			new FormAction('savememberform', _t('MerchantPage_Controller.SAVE_PERSONAL_DETAILS', 'Save My Personal Details'))
 		);
 		$form = new Form($this, 'MemberForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($member);
@@ -171,7 +189,7 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 		return $form;
 	}
 
-	function saveMemberForm($data, $form) {
+	function savememberform($data, $form) {
 		$member = Member::currentUser();
 		if($member) {
 			try {
@@ -185,6 +203,10 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 		return Director::redirectBack();
 	}
 
+	/****************************************
+	 * Forms: Merchant Page
+	 ****************************************/
+
 	function MerchantPageForm() {
 		$fields = new FieldSet(
 			new TextField('Website', _t('MerchantPage.WEBSITE', 'Website')),
@@ -196,14 +218,14 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 		$imageField->setValidator($validator);*/
 		$requiredFields = new RequiredFields('Website', 'Description');
 		$actions = new FieldSet(
-			new FormAction('saveMerchantPageForm', _t('MerchantPage_Controller.SAVE_STORE_DETAILS', 'Save My Store Details'))
+			new FormAction('savemerchantpageform', _t('MerchantPage_Controller.SAVE_STORE_DETAILS', 'Save My Store Details'))
 		);
 		$form = new Form($this, 'MerchantPageForm', $fields, $actions, $requiredFields);
 		$form->loadDataFrom($this);
 		return $form;
 	}
 
-	function saveMerchantPageForm($data, $form) {
+	function savemerchantpageform($data, $form) {
 		if($this->canFrontEndEdit()) {
 			try {
 				$form->saveInto($this->dataRecord); // Call on dataRecord to fix SimpleImageField issue
@@ -217,18 +239,20 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 		return Director::redirectBack();
 	}
 
-	// Add Location
+	/****************************************
+	 * Forms: Location
+	 ****************************************/
 
 	function AddLocationForm() {
 		$singleton = Object::create('MerchantLocation');
 		list($fields, $requiredFields) = $singleton->getFrontEndFields();
 		$actions = new FieldSet(
-			new FormAction('saveAddLocationForm', _t('MerchantPage_Controller.ADD_NEW_STORE', 'Add New Store'))
+			new FormAction('saveaddlocationform', _t('MerchantPage_Controller.ADD_NEW_STORE', 'Add New Store'))
 		);
 		return new Form($this, 'AddLocationForm', $fields, $actions, $requiredFields);
 	}
 
-	function saveAddLocationForm($data, $form) {
+	function saveaddlocationform($data, $form) {
 		if($this->canFrontEndEdit()) {
 			try {
 				$location = Object::create('MerchantLocation');
@@ -245,16 +269,18 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 		return Director::redirectBack();
 	}
 
-	// Add Product
+	/****************************************
+	 * Forms: Add Product
+	 ****************************************/
 
 	function AddProductForm() {
 		$singleton = Object::create('MerchantProduct');
 		list($fields, $requiredFields) = $singleton->getFrontEndFields($this);
-		$actions = new FieldSet(new FormAction('saveAddProductForm', _t('MerchantPage_Controller.ADD_NEW_PRODUCT', 'Add New Product')));
+		$actions = new FieldSet(new FormAction('saveaddproductform', _t('MerchantPage_Controller.ADD_NEW_PRODUCT', 'Add New Product')));
 		return new Form($this, 'AddProductForm', $fields, $actions, $requiredFields);
 	}
 
-	function saveAddProductForm($data, $form) {
+	function saveaddproductform($data, $form) {
 		if($this->canFrontEndEdit()) {
 			try {
 				$product = Object::create('MerchantProduct');
@@ -270,7 +296,8 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 				$product->writeToStage('Stage');
 				$product->Publish('Stage', 'Live');
 				return Director::redirect($product->EditLink());
-			} catch (ValidationException $e) {
+			}
+			catch (ValidationException $e) {
 				$form->sessionMessage(_t('MerchantProduct_Controller.SAVE_PRODUCT_DETAILS_ERROR', 'Your product details could not be saved.'), 'bad');
 			}
 		}

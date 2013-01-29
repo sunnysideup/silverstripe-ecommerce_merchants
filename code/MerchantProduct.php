@@ -2,9 +2,17 @@
 
 class MerchantProduct extends Product {
 
+	/****************************************
+	 * Model Setup
+	 ****************************************/
+
 	static $many_many = array(
 		'Categories' => 'Category'
 	);
+
+
+	protected static $active_filter = 'ShowInSearch = 1 AND AllowPurchase = 1';
+		public static function get_active_filter(){return self::$active_filter;}
 
 	static $default_parent = 'MerchantPage';
 
@@ -24,6 +32,10 @@ class MerchantProduct extends Product {
 		return $this->canFrontEndEdit($member);
 	}
 
+	/****************************************
+	 * CRUD Forms
+	 ****************************************/
+
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->removeByName('AlsoShowHere');
@@ -41,33 +53,6 @@ class MerchantProduct extends Product {
 		return $fields;
 	}
 
-	function Locations() {
-		return $this->getManyManyComponents('ProductGroups', MerchantLocation::$active_filter);
-	}
-
-	function EditLink() {
-		return $this->Link('edit');
-	}
-
-	function onBeforeWrite() {
-    	parent::onBeforeWrite();
-		$this->MetaTitle = $this->Title;
-		$this->MetaDescription = strip_tags($this->Content);
-	}
-
-	function onAfterWrite() {
-		parent::onAfterWrite();
-		$parent = $this->Parent();
-		$filter = '';
-		if($parent->exists() && is_a($parent, self::$default_parent)) {
-			$locations = $parent->Locations();
-			if($locations) {
-				$locations = implode(',', $locations->map('ID', 'ID'));
-				$filter = " AND ProductGroupID NOT IN ($locations)";
-			}
-		}
-		DB::query("DELETE FROM Product_ProductGroups WHERE ProductID = $this->ID$filter");
-	}
 
 	function getFrontEndFields(MerchantPage $parent = null) {
 		if(! $parent) {
@@ -92,9 +77,51 @@ class MerchantProduct extends Product {
 		$requiredFields = new RequiredFields('Title', 'Content', 'Price', 'Categories');
 		return array($fields, $requiredFields);
 	}
+
+	/****************************************
+	 * Controller related stuff
+	 ****************************************/
+
+	function Locations() {
+		return $this->getManyManyComponents('ProductGroups', MerchantLocation::get_active_filter());
+	}
+
+	function EditLink() {
+		return $this->Link('edit');
+	}
+
+
+	/****************************************
+	 * reading and writing
+	 ****************************************/
+
+	function onBeforeWrite() {
+		parent::onBeforeWrite();
+		$this->MetaTitle = $this->Title;
+		$this->MetaDescription = strip_tags($this->Content);
+	}
+
+	function onAfterWrite() {
+		parent::onAfterWrite();
+		$parent = $this->Parent();
+		$filter = '';
+		if($parent->exists() && is_a($parent, self::$default_parent)) {
+			$locations = $parent->Locations();
+			if($locations) {
+				$locations = implode(',', $locations->map('ID', 'ID'));
+				$filter = " AND ProductGroupID NOT IN ($locations)";
+			}
+		}
+		DB::query("DELETE FROM Product_ProductGroups WHERE ProductID = $this->ID$filter");
+	}
+
 }
 
 class MerchantProduct_Controller extends Product_Controller {
+
+	/****************************************
+	 * Actions
+	 ****************************************/
 
 	function edit() {
 		if(! $this->canFrontEndEdit()) {
@@ -102,6 +129,11 @@ class MerchantProduct_Controller extends Product_Controller {
 		}
 		return array();
 	}
+
+
+	/****************************************
+	 * Forms
+	 ****************************************/
 
 	function EditForm() {
 		list($fields, $requiredFields) = $this->getFrontEndFields();
@@ -131,7 +163,7 @@ class MerchantProduct_Controller extends Product_Controller {
 		return Director::redirect($this->EditLink()); // Not redirectBack because the URLSegment might have changed
 	}
 
-	function removeProduct($data, $form) {
+	function removeproduct($data, $form) {
 		if($this->canFrontEndEdit()) {
 			$this->dataRecord->AllowPurchase = false;
 			$this->writeToStage('Stage');
@@ -139,4 +171,5 @@ class MerchantProduct_Controller extends Product_Controller {
 		}
 		return Director::redirect($this->Parent()->Link());
 	}
+
 }

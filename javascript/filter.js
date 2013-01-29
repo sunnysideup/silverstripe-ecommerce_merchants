@@ -1,16 +1,24 @@
 jQuery(document).ready(
 	function() {
+		AllMerchantsPageFilter.init();
+		AllMerchantsPageFilter.initMoreLinks();
+	}
+);
+
+var AllMerchantsPageFilter = {
+
+	init: function() {
 		var form = jQuery('form#Form_FilterForm');
 
 		jQuery(form).find('.Actions').hide();
 
-		var location = getURLWithoutGetVars();
+		var location = AllMerchantsPageFilter.getURLWithoutGetVars();
 
 		if(location) {
 			jQuery(form).find(".checkboxset").each(
 				function(){
 					var id = jQuery(this).attr("id");
-					var selected = getUrlVars()[(id + '').toLowerCase()];
+					var selected = AllMerchantsPageFilter.getUrlVars()[(id + '').toLowerCase()];
 					jQuery(this).find("input[value="+selected+"]").attr("checked", "checked");
 				}
 			);
@@ -30,30 +38,53 @@ jQuery(document).ready(
 						jQuery.each(response,
 							function(id, html) {
 								jQuery('#' + id).html(html).triggerHandler('onAfterWrite');
+								AllMerchantsPageFilter.initMoreLinks('#' + id);
 							}
 						);
 					}
 				});
 			}
 		);
-	}
-);
+	},
 
-function getUrlVars(){
-	var vars = [], hash;
-	if(window.location.href.indexOf('?')) {
-		var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	initMoreLinks: function(filter = "body"){
+		jQuery(filter).find(".allMerchantsPageMore a").click(
+			function(e) {
+				e.preventDefault();
+				var url = jQuery(this).attr("href");
+				var target = jQuery(this).attr("rel");
+				var parent = jQuery(this).parent();
+				jQuery.get(
+					url,
+					function(data,status,xhr) {
+						jQuery(parent).remove();
+						jQuery("#"+target).append(data);
+						AllMerchantsPageFilter.initMoreLinks("#"+target);
+					}
+				);
+			}
+		)
+	},
 
-		for(var i = 0; i < hashes.length; i++){
-			hash = hashes[i].split('=');
-			vars.push(hash[0]);
-			vars[hash[0]] = hash[1];
+	getUrlVars: function (){
+		var vars = [], hash;
+		if(window.location.href.indexOf('?')) {
+			var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+
+			for(var i = 0; i < hashes.length; i++){
+				hash = hashes[i].split('=');
+				vars.push(hash[0]);
+				vars[hash[0]] = hash[1];
+			}
 		}
+		return vars;
+	},
+
+	getURLWithoutGetVars: function (){
+		var location = window.location.href.slice(0, window.location.href.indexOf('?') -1);
+		return location;
 	}
-	return vars;
+
+
 }
 
-function getURLWithoutGetVars(){
-	var location = window.location.href.slice(0, window.location.href.indexOf('?') -1);
-	return location;
-}
