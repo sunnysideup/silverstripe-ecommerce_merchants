@@ -59,9 +59,9 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	protected static $city_param = 'city';
 		public static function get_city_param(){return self::$city_param; }
 
-	protected $productsPerPage = 30;
+	protected $productsPerPage = 16;
 
-	protected $merchantsPerPage = 9;
+	protected $merchantsPerPage = 6;
 
 	protected $productCount = 0;
 
