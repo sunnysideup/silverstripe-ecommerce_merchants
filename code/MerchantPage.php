@@ -47,7 +47,7 @@ class MerchantPage extends ProductGroup {
 		}
 		$fields->addFieldToTab('Root.Content.Main', new TextField('Website'), 'Content');
 		if($this->ID) {
-			$fields->addFieldToTab('Root.Content.Main', new ReadonlyField('OnlyShowLink'), 'Content');
+			$fields->addFieldToTab('Root.Content.Main', new LiteralField('OnlyShowLink', "<p class=\"message good\"><a href=\"{$this->OnlyShowLink()}\" target=\"_blank\">Only show link</a></p>"), 'Content');
 		}
 		$fields->replaceField('Content', new TextareaField('Content', _t('MerchantPage.CONTENT', 'Content')));
 		$fields->addFieldToTab('Root.Content.Logo', new ImageField('Image', _t('MerchantPage.LOGO', 'Logo'), null, null, null, 'Logos'));
@@ -149,7 +149,7 @@ class MerchantPage extends ProductGroup {
 		}
 	}
 
-	function getOnlyShowLink() {
+	function OnlyShowLink() {
 		if(is_a($this, 'MerchantPage')) {
 			$page = DataObject::get_one('HomePage');
 			return $page->Link('onlyshow/' . strtolower($this->Title));
