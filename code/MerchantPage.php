@@ -46,6 +46,9 @@ class MerchantPage extends ProductGroup {
 			$fields->removeByName($name);
 		}
 		$fields->addFieldToTab('Root.Content.Main', new TextField('Website'), 'Content');
+		if($this->ID) {
+			$fields->addFieldToTab('Root.Content.Main', new ReadonlyField('OnlyShowLink'), 'Content');
+		}
 		$fields->replaceField('Content', new TextareaField('Content', _t('MerchantPage.CONTENT', 'Content')));
 		$fields->addFieldToTab('Root.Content.Logo', new ImageField('Image', _t('MerchantPage.LOGO', 'Logo'), null, null, null, 'Logos'));
 		return $fields;
@@ -146,6 +149,12 @@ class MerchantPage extends ProductGroup {
 		}
 	}
 
+	function getOnlyShowLink() {
+		if(is_a($this, 'MerchantPage')) {
+			$page = DataObject::get('HomePage');
+			return $page->Link('onlyshow/' . strtolower($this->Title));
+		}
+	}
 }
 
 class MerchantPage_Controller extends ProductGroup_Controller {
