@@ -27,11 +27,13 @@ class MerchantLocation extends ProductGroup {
 	);
 
 	protected static $active_filter = 'ShowInSearch = 1';
-	public static function get_active_filter() {
+	public static function get_active_filter($checkMerchant = true) {
 		$filter = self::$active_filter;
-		$merchantID = Cookie::get(Page_Controller::$merchant_param);
-		if($merchantID) {
-			$filter .= " AND ParentID = $merchantID";
+		if($checkMerchant) {
+			$merchantID = Cookie::get(Page_Controller::$merchant_param);
+			if($merchantID) {
+				$filter .= " AND ParentID = $merchantID";
+			}
 		}
 		return $filter;
 	}

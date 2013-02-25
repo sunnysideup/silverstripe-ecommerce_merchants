@@ -63,7 +63,7 @@ class MerchantPage extends ProductGroup {
 	 ****************************************/
 
 	function Locations() {
-		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID AND " . MerchantLocation::get_active_filter());
+		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID AND " . MerchantLocation::get_active_filter(false));
 	}
 
 	function Products() {

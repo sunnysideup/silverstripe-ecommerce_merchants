@@ -90,7 +90,7 @@ class MerchantProduct extends Product {
 	 ****************************************/
 
 	function Locations() {
-		return $this->getManyManyComponents('ProductGroups', MerchantLocation::get_active_filter());
+		return $this->getManyManyComponents('ProductGroups', MerchantLocation::get_active_filter(false));
 	}
 
 	function EditLink() {
