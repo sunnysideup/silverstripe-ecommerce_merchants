@@ -152,7 +152,7 @@ class MerchantPage extends ProductGroup {
 	function OnlyShowLink() {
 		if(is_a($this, 'MerchantPage')) {
 			$page = DataObject::get_one('HomePage');
-			return $page->Link('onlyshow/' . strtolower($this->Title));
+			return $page->Link("onlyshow/{$this->URLSegment}");
 		}
 	}
 }
