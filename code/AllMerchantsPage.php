@@ -231,7 +231,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			if($filter) {
 				$filters[] = $filter;
 			}
-			if($this->Products()) {
+			if($this->Products() && count($this->productArray) > 0) {
 				$productArrayAsString = implode(",", $this->productArray);
 				$join = 'INNER JOIN Product_ProductGroups ON SiteTree'.$this->stageAppendix().'.ID = ProductGroupID';
 				$filters[] = 'ProductID IN (' . $productArrayAsString . ')';
