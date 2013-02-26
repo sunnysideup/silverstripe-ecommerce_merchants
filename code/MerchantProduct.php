@@ -6,10 +6,6 @@ class MerchantProduct extends Product {
 	 * Model Setup
 	 ****************************************/
 
-	/*static $has_many = array(
-		'Coupons' => 'DiscountCouponOption'
-	);*/
-
 	static $many_many = array(
 		'Categories' => 'Category'
 	);
@@ -60,11 +56,6 @@ class MerchantProduct extends Product {
 			if($locations) {
 				$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('ProductGroups', _t('MerchantProduct.PRODUCTGROUPS', 'Locations'), $locations));
 			}
-			$couponFields = singleton('DiscountCouponOption')->getCMSFields();
-			$couponFields->removeByName('AppliesTo');
-			$couponFields->addFieldToTab('Root.Main', new HiddenField('PageIDs', '', $this->ID));
-			$table = new ComplexTableField($this, 'Coupons', 'DiscountCouponOption', null, $couponFields);
-			$fields->addFieldToTab('Root.Content.Coupons', $table);
 		}
 		return $fields;
 	}
