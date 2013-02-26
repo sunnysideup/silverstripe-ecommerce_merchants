@@ -58,7 +58,7 @@ class MerchantProduct extends Product {
 			}
 			$couponFields = singleton('DiscountCouponOption')->getCMSFields();
 			$couponFields->removeByName('AppliesTo');
-			$couponFields->addFieldToTab('Root.Main', new HiddenField('PageIDs', '', $this->ID));
+			$couponFields->addFieldToTab('Root.Main', new HiddenField('PageIDs', $this->ID, $this->ID));
 			$table = new ComplexTableField($this, 'Coupons', 'DiscountCouponOption', null, $couponFields);
 			$fields->addFieldToTab('Root.Content.Coupons', $table);
 		}
