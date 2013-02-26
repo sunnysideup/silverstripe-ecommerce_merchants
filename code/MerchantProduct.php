@@ -56,6 +56,10 @@ class MerchantProduct extends Product {
 			if($locations) {
 				$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('ProductGroups', _t('MerchantProduct.PRODUCTGROUPS', 'Locations'), $locations));
 			}
+			$couponFields = singleton('DiscountCouponOption')->getCMSFields();
+			
+			$table = new ComplexTableField($this, 'Coupons', 'DiscountCouponOption', null, $couponFields);
+			$fields->addFieldToTab('Root.Content.Coupons', $table);
 		}
 		return $fields;
 	}
