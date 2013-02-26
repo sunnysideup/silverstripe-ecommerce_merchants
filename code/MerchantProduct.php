@@ -6,7 +6,7 @@ class MerchantProduct extends Product {
 	 * Model Setup
 	 ****************************************/
 
-	static $has_many => array(
+	static $has_many = array(
 		'Coupons' => 'DiscountCouponOption'
 	);
 
