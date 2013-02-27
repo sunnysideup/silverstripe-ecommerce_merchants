@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/ecommerce_merchants",
+	"name": "sunnysideup/ecommerce_merchants",
 	"type": "silverstripe-module",
 	"description": "allow many businesses to sell within one shop.",
 	"homepage": "http://www.silverstripe-ecommerce.com",
