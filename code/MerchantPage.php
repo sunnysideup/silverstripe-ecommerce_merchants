@@ -48,6 +48,7 @@ class MerchantPage extends ProductGroup {
 		$fields->addFieldToTab('Root.Content.Main', new TextField('Website'), 'Content');
 		if($this->ID) {
 			$fields->addFieldToTab('Root.Content.Main', new LiteralField('OnlyShowLink', "<p class=\"message good\"><a href=\"{$this->OnlyShowLink()}\" target=\"_blank\">Only show link</a></p>"), 'Content');
+			$fields->addFieldToTab('Root.Content.Main', new LiteralField('ExportPaymentsLink', "<p class=\"message good\"><a href=\"{$this->ExportPaymentsLink()}\" target=\"_blank\">Export payments link</a></p>"), 'Content');
 		}
 		$fields->replaceField('Content', new TextareaField('Content', _t('MerchantPage.CONTENT', 'Content')));
 		$fields->addFieldToTab('Root.Content.Logo', new ImageField('Image', _t('MerchantPage.LOGO', 'Logo'), null, null, null, 'Logos'));
@@ -154,6 +155,10 @@ class MerchantPage extends ProductGroup {
 			$page = DataObject::get_one('HomePage');
 			return $page->Link("onlyshow/{$this->URLSegment}");
 		}
+	}
+
+	function ExportPaymentsLink() {
+		return ExportMerchantOrders::merchant_link($this);
 	}
 }
 
