@@ -183,11 +183,17 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	protected static $city_param = 'city';
 		public static function get_city_param(){return self::$city_param; }
 
-	protected static $price_from_param = 'from';
+	protected static $price_from_param = 'pricefrom';
 		public static function get_price_from_param(){return self::$price_from_param; }
 
-	protected static $price_upto_param = 'upto';
+	protected static $price_upto_param = 'priceupto';
 		public static function get_price_upto_param(){return self::$price_upto_param; }
+
+	/**
+	 *
+	 * @var Boolean
+	 */
+	protected $mydebug = false;
 
 	/**
 	 *
@@ -251,8 +257,12 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//  =======================
 
 		//ppp
-		if(isset($_REQUEST[self::get_ppp_param()])) {
+		if(isset($_REQUEST[self::get_ppp_param()]) && $_REQUEST[self::get_ppp_param()]) {
 			$this->productsPerPage = intval($_REQUEST[self::get_ppp_param()]);
+		}
+
+		if(isset($_REQUEST["mydebug"])) {
+			$this->mydebug = true;
 		}
 
 		//pos
@@ -373,7 +383,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//priceOptionsFrom
 		$priceOptionsFrom = DataObject::get('MerchantPriceOption', "ShowInFrom = 1");
 		if($priceOptionsFrom) {
-			$priceOptionsFrom = $priceOptionsFrom->map("Price", "PriceNice");
+			$priceOptionsFrom = $priceOptionsFrom->map("PriceInt", "PriceNice");
 		}
 		else {
 			$priceOptionsFrom = array();
@@ -382,7 +392,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//priceOptionsUpTo
 		$priceOptionsUpTo = DataObject::get('MerchantPriceOption', "ShowInUpTo = 1");
 		if($priceOptionsUpTo) {
-			$priceOptionsUpTo = $priceOptionsUpTo->map("Price", "PriceNice");
+			$priceOptionsUpTo = $priceOptionsUpTo->map("PriceInt", "PriceNice");
 		}
 		else {
 			$priceOptionsUpTo = array();
@@ -464,7 +474,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$filters[] = ' Product'.$this->stageAppendix().'.Price <= '.$this->priceUpTo;
 			}
 			$filters[] = MerchantProduct::get_active_filter();
-			$sort = "Sort ASC";
+			$sort = "LastEdited DESC";
 
 			//GLUE
 			$filter = '('.implode(') AND (', $filters).')';
@@ -566,8 +576,8 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		$getVariables .= $this->CategoryLink($this->categoryID, false);
 		$getVariables .= $this->MerchantPageLink($this->merchantPageID, false);
 		$getVariables .= $this->CityLink($this->cityID, false);
-		$getVariables .= $this->PriceFromLink($this->priceOptionsFrom, false);
-		$getVariables .= $this->PriceUpToLink($this->priceOptionsUpTo, false);
+		$getVariables .= $this->PriceFromLink($this->priceFrom, false);
+		$getVariables .= $this->PriceUpToLink($this->priceUpTo, false);
 		return $getVariables;
 	}
 
@@ -591,16 +601,16 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		$count = 0;
 		$min = $offSet;
 		$max = ($offSet + $perPage);
+		$filterSting = $table.".ID IN (0";
 		$sortString = "IF(".$table.".ID=0, 0";
 		$closingBracket = ", 999)";
-		$filterSting = $table.".ID IN (0";
 		if(count($array)) {
 			foreach($array as $value) {
 				$count++;
 				if($count > $min && $count <= $max ) {
+					$filterSting .= ",$value";
 					$sortString .= ", IF(".$table.".ID=$value, $count";
 					$closingBracket .= ")";
-					$filterSting .= ", $value";
 				}
 			}
 			$filterSting .= ")";
@@ -608,7 +618,6 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				"Filter" => $filterSting,
 				"Sort" => $sortString."".$closingBracket." ASC"
 			);
-
 		}
 		return array(
 			"Filter" => "-1 = 0",
@@ -625,6 +634,17 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			}
 		}
 		return self::$stage_appendix_cache;
+	}
+
+	function Debug(){
+		if($this->mydebug) {
+			return
+				print_r($this->productArray, 1).
+				"<hr />".
+				print_r($this->ProductCount());
+				"<hr />".
+				print_r($this->CurrentlyShowing());
+		}
 	}
 
 }
