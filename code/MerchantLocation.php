@@ -30,7 +30,7 @@ class MerchantLocation extends ProductGroup {
 	public static function get_active_filter($checkMerchant = true) {
 		$filter = self::$active_filter;
 		if($checkMerchant) {
-			$merchantID = Cookie::get(Page_Controller::$merchant_param);
+			$merchantID = intval(Cookie::get(Page_Controller::get_merchant_param()));
 			if($merchantID) {
 				$filter .= " AND ParentID = $merchantID";
 			}

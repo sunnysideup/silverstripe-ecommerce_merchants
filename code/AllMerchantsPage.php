@@ -8,19 +8,45 @@ class AllMerchantsPage extends ProductGroup {
 
 	public static $icon = "ecommerce_merchants/images/AllMerchantsPage";
 
-	function canCreate() {
+	/**
+	 * can create only one
+	 * @param Member $member
+	 * @return Boolean
+	 */
+	function canCreate($member = null) {
 		return ! DataObject::get_one($this->class);
 	}
 
+
+	/**
+	 * SS standard variable
+	 * @var Array
+	 */
 	static $allowed_children = array('MerchantPage');
 
+	/**
+	 * SS standard variable
+	 * @var String
+	 */
 	static $default_child = 'MerchantPage';
 
+	/**
+	 * SS standard variable
+	 * @var String
+	 */
 	static $hide_ancestor = 'ProductGroup';
 
+	/**
+	 * SS standard variable
+	 * @var String
+	 */
 	static $singular_name = 'All Merchants Page';
 		function i18n_singular_name() {return _t('AllMerchantsPage.SINGULARNAME', self::$singular_name);}
 
+	/**
+	 * SS standard variable
+	 * @var String
+	 */
 	public static $plural_name = 'All Merchants Pages';
 		function i18n_plural_name() {return _t('AllMerchantsPage.PLURALNAME', self::$plural_name);}
 
@@ -29,6 +55,10 @@ class AllMerchantsPage extends ProductGroup {
 	 * CRUD FORMS
 	 ****************************************/
 
+	/**
+	 * SS standard method
+	 * @return FieldSet
+	 */
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
 		foreach(array('Images', 'ProductDisplay', 'OtherProductsShown') as $name) {
@@ -41,45 +71,232 @@ class AllMerchantsPage extends ProductGroup {
 	 * CONTROLLER LIKE METHODS
 	 ****************************************/
 
-	function CategoryLink(Category $category) {
-		return "{$this->Link()}?" . AllMerchantsPage_Controller::get_category_param() . "=$category->ID";
+	/**
+	 * Link to a category Filter
+	 * @param Int $category
+	 * @param Boolean $fullLink
+	 * @return String (HTML)
+	 */
+	function CategoryLink($categoryID, $fullLink = false) {
+		$link = "";
+		if($fullLink) {
+			$link .= "{$this->Link()}/?";
+		}
+		if($categoryID) {
+			$link .= "&amp;".AllMerchantsPage_Controller::get_category_param()."=".$categoryID;
+		}
+		return $link;
 	}
 
 
-	function CityLink(City $city) {
-		return "{$this->Link()}?" . AllMerchantsPage_Controller::get_city_param() . "=$city->ID";
+	/**
+	 * Link to a MerchantPage Filter
+	 * @param Int $merchantPageID
+	 * @param Boolean $fullLink
+	 * @return String (HTML)
+	 */
+	function MerchantPageLink($merchantPageID, $fullLink = false) {
+		$link = "";
+		if($fullLink) {
+			$link .= "{$this->Link()}/?";
+		}
+		if($merchantPageID) {
+			$link .= "&amp;".AllMerchantsPage_Controller::get_merchant_page_param()."=".$merchantPageID;
+		}
+		return $link;
 	}
+
+
+	/**
+	 * Link to a City Filter
+	 * @param Int $cityID
+	 * @param Boolean $fullLink
+	 * @return String (HTML)
+	 */
+	function CityLink($cityID, $fullLink = false) {
+		$link = "";
+		if($fullLink) {
+			$link .= "{$this->Link()}/?";
+		}
+		if($cityID) {
+			$link .= "&amp;".AllMerchantsPage_Controller::get_city_param()."=".$cityID;
+		}
+		return $link;
+	}
+
+
+	/**
+	 * Link to a Price from filter
+	 * @param Int $priceFrom
+	 * @param Boolean $fullLink
+	 * @return String (HTML)
+	 */
+	function PriceFromLink($priceFrom, $fullLink = false) {
+		$link = "";
+		if($fullLink) {
+			$link .= "{$this->Link()}/?";
+		}
+		if($priceFrom) {
+			$link .= "&amp;".AllMerchantsPage_Controller::get_price_from_param()."=".$priceFrom;
+		}
+		return $link;
+	}
+
+	/**
+	 * Link to a price up to filter
+	 * @param Int $priceUpTo
+	 * @param Boolean $fullLink
+	 * @return String (HTML)
+	 */
+	function PriceUpToLink($priceUpTo, $fullLink = false) {
+		$link = "";
+		if($fullLink) {
+			$link .= "{$this->Link()}/?";
+		}
+		if($priceUpTo) {
+			$link .= "&amp;".AllMerchantsPage_Controller::get_price_upto_param()."=".$priceUpTo;
+		}
+		return $link;
+	}
+
+
 }
 
 class AllMerchantsPage_Controller extends ProductGroup_Controller {
 
+	protected static $merchant_product_session_array_name = 'merchantproductsessionarray';
+		public static function get_merchant_product_session_array_name(){return self::$merchant_product_session_array_name;}
+		public static function set_merchant_product_session_array_name($s){self::$merchant_product_session_array_name = $s;}
+
+	protected static $ppp_param = 'ppp';
+		public static function get_ppp_param(){return self::$ppp_param; }
+
+	protected static $pos_param = 'pos';
+		public static function get_pos_param(){return self::$pos_param; }
+
 	protected static $category_param = 'category';
 		public static function get_category_param(){return self::$category_param; }
+
+	protected static $merchant_param = 'merchant';
+		public static function get_merchant_page_param(){return self::$merchant_param; }
 
 	protected static $city_param = 'city';
 		public static function get_city_param(){return self::$city_param; }
 
-	protected $productsPerPage = 16;
+	protected static $price_from_param = 'from';
+		public static function get_price_from_param(){return self::$price_from_param; }
 
-	protected $merchantsPerPage = 6;
+	protected static $price_upto_param = 'upto';
+		public static function get_price_upto_param(){return self::$price_upto_param; }
 
-	protected $productCount = 0;
-
-	protected $merchantCount = 0;
-
+	/**
+	 *
+	 * @var Array
+	 */
 	protected $productArray = array();
 
-	protected $merchantArray = array();
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $productCount = 0;
 
-	protected $cityFilter = '';
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $productsPerPage = 4;
+
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $productOffSet = 0;
+
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $categoryID = 0;
+
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $merchantPageID = 0;
+
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $cityID = 0;
+
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $priceFrom = 0;
+
+	/**
+	 *
+	 * @var Int
+	 */
+	protected $priceUpTo = 0;
 
 	function init() {
 		parent::init();
-		if(Director::is_ajax()) {
 
+		//  =======================
+		//CURRENT SETTINGS
+		//  =======================
+
+		//ppp
+		if(isset($_REQUEST[self::get_ppp_param()])) {
+			$this->productsPerPage = intval($_REQUEST[self::get_ppp_param()]);
+		}
+
+		//pos
+		if(isset($_REQUEST[self::get_pos_param()])) {
+			$this->productOffSet = intval($_REQUEST[self::get_pos_param()]);
 		}
 		else {
+			$this->productOffSet = 0;
+		}
 
+		//category
+		if(isset($_REQUEST[self::get_category_param()])) {
+			$this->categoryID = intval($_REQUEST[self::get_category_param()]);
+		}
+		else {
+			$this->categoryID = 0;
+		}
+		//merchant page
+		if(isset($_REQUEST[self::get_merchant_page_param()])) {
+			$this->merchantPageID = intval($_REQUEST[self::get_merchant_page_param()]);
+		}
+		else {
+			$this->merchantPageID = 0;
+		}
+		//city
+		if(isset($_REQUEST[self::get_city_param()])) {
+			$this->cityID = intval($_REQUEST[self::get_city_param()]);
+		}
+		else {
+			$this->cityID = 0;
+		}
+		//priceFrom
+		if(isset($_REQUEST[self::get_price_from_param()])) {
+			$this->priceFrom = intval($_REQUEST[self::get_price_from_param()]);
+		}
+		else {
+			$this->priceFrom = 0;
+		}
+		//priceUpTo
+		if(isset($_REQUEST[self::get_price_upto_param()])) {
+			$this->priceUpTo = intval($_REQUEST[self::get_price_upto_param()]);
+		}
+		else {
+			$this->priceUpTo = 0;
 		}
 		Requirements::javascript('ecommerce_merchants/javascript/filter.js');
 	}
@@ -88,215 +305,173 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	 * Actions
 	 ****************************************/
 
+	/**
+	 * AJAX Controller to show products
+	 * @return String (HTML)
+	 */
 	function moreproducts(){
 		if(Director::is_ajax()) {
-			$productArrayAsString = Session::get("productArrayAsString");
+			$productArrayAsString = Session::get(self::get_merchant_product_session_array_name());
 			$productArray = explode(",", $productArrayAsString);
 			$this->productCount = count($productArray);
-			$sortbyAndFilterIDMakerArray = $this->sortbyAndFilterIDMaker($productArray, $this->productOffSet(), $this->productsPerPage, "MerchantProduct".$this->stageAppendix());
+			$sortbyAndFilterIDMakerArray = $this->sortbyAndFilterIDMaker($productArray, $this->productOffSet(), $this->productsPerPage(), "MerchantProduct".$this->stageAppendix());
 			self::$products_cache = DataObject::get(
 				'MerchantProduct',
 				$sortbyAndFilterIDMakerArray["Filter"],
 				$sortbyAndFilterIDMakerArray["Sort"]
 			);
-			return $this->customise(array("Products" => self::$products_cache))->renderWith("ProductsHolder");
+			$variablesForTemplateArray = $this->variablesForTemplate();
+			$variablesForTemplateArray["Products"] = self::$products_cache;
+			return $this->customise($variablesForTemplateArray)->renderWith("ProductsHolder");
 		}
 		else {
-			//$this->productsPerPage = $this->productOffSet();
-			//unset($_GET["productoffset"]);
+			$this->redirect($this->Link()."?".str_replace('&amp;', '&', $this->filterGetVariables()));
 			return Array();
 		}
 	}
 
-	function moremerchants(){
-		$merchants = $this->Merchants();
-		if(Director::is_ajax()) {
-			$merchantArrayAsString = Session::get("merchantArrayAsString");
-			$merchantArray = explode(",", $merchantArrayAsString);
-			$this->merchantCount = count($merchantArray);
-			$sortbyAndFilterIDMakerArray = $this->sortbyAndFilterIDMaker($merchantArray, $this->merchantOffSet(), $this->merchantsPerPage, "MerchantLocation".$this->stageAppendix());
-			self::$merchants_cache = DataObject::get(
-				'MerchantLocation',
-				$sortbyAndFilterIDMakerArray["Filter"],
-				$sortbyAndFilterIDMakerArray["Sort"]
-			);
-			return $this->customise(array("Merchants" => self::$merchants_cache))->renderWith("MerchantsHolder");
-		}
-		else {
-			//$this->merchantsPerPage = $this->merchantOffSet();
-			//unset($_GET["merchantoffset"]);
-			return Array();
-		}
-	}
 
 	/****************************************
 	 * FORMS
 	 ****************************************/
 
+	/**
+	 * returns filter form for filtering products on page
+	 * @return Form
+	 */
 	function FilterForm() {
-		$cities = DataObject::get('City');
-		$cities = $cities->map();
+		//  =======================
+		//  DROPDOWN
+		//  =======================
+		//category
 		$categories = DataObject::get('Category');
-		$categories = $categories->map('ID', 'getFilterFormHTMLTitle');
-		if(isset($_REQUEST[self::$city_param])) {
-			$cityID = $_REQUEST[self::$city_param];
-			$cityArray = $_REQUEST[self::$city_param];
+		if($categories) {
+			$categories = $categories->map('ID', 'Name');
 		}
 		else {
-			$cityID = 0;
-			$cityArray = null;
+			$categories = array();
 		}
-		if(isset($_REQUEST[self::$category_param])) {
-			$categoryID = $_REQUEST[self::$category_param];
-			$categoryArray = $_REQUEST[self::$category_param];
+		$categories = array( 0 => _t("Merchants.ALL_CATEGORIES", "-- All Categories")) + $categories;
+		//merchants
+		$merchantPages = DataObject::get('MerchantPage');
+		if($merchantPages) {
+			$merchantPages = $merchantPages->map();
 		}
 		else {
-			$categoryID = 0;
-			$categoryArray = null;
+			$merchantPages = array();
 		}
+		$merchantPages = array( 0 => _t("Merchants.ALL_MERCHANTS", "-- All Merchants")) + $merchantPages;
+		//city
+		$cities = DataObject::get('City');
+		if($cities) {
+			$cities = $cities->map();
+		}
+		else {
+			$cities = array();
+		}
+		$cities = array( 0 => _t("Merchants.ALL_CITIES", "-- All Cities")) + $cities;
+		//priceOptionsFrom
+		$priceOptionsFrom = DataObject::get('MerchantPriceOption', "ShowInFrom = 1");
+		if($priceOptionsFrom) {
+			$priceOptionsFrom = $priceOptionsFrom->map("Price", "PriceNice");
+		}
+		else {
+			$priceOptionsFrom = array();
+		}
+		$priceOptionsFrom = array( 0 => _t("Merchants.FROM", "-- From")) + $priceOptionsFrom;
+		//priceOptionsUpTo
+		$priceOptionsUpTo = DataObject::get('MerchantPriceOption', "ShowInUpTo = 1");
+		if($priceOptionsUpTo) {
+			$priceOptionsUpTo = $priceOptionsUpTo->map("Price", "PriceNice");
+		}
+		else {
+			$priceOptionsUpTo = array();
+		}
+		$priceOptionsUpTo = array( 0 => _t("Merchants.UPTO", "-- Up To")) + $priceOptionsUpTo;
 
+		//==============================
+		// CREATE DROPDOWNS
+		//==============================
 		$fields = new FieldSet(
-			new CheckboxSetField('City', 'Selecteer locatie', $cities, $cityArray),
-			new CheckboxSetField('Category', 'Selecteer categorie', $categories, $categoryArray)
+			new Dropdownfield(self::get_category_param(), _t("Merchants.SELECT_CATEGORY", "Select Category"), $categories, $this->categoryID),
+			new Dropdownfield(self::get_merchant_page_param(), _t("Merchants.SELECT_MERCHANT", "Select Merchant"), $merchantPages, $this->merchantPageID),
+			new Dropdownfield(self::get_city_param(), _t("Merchants.SELECT_LOCATION", "Select Location"), $cities, $this->cityID),
+			new Dropdownfield(self::get_price_from_param(), _t("Merchants.PRICE_FROM", "Price From"), $priceOptionsFrom, $this->priceFrom),
+			new Dropdownfield(self::get_price_upto_param(), _t("Merchants.PRICE_UNTIL", "Price Until"), $priceOptionsUpTo, $this->priceUpTo)
 		);
 		//reset City Form (needed to avoid discrepancies when using the Back Button)
-		Requirements::customScript("
-			jQuery(document).ready(
-				function() {
-					jQuery(\"#City input\").each(
-							function(i, el){
-								if($cityID > 0 && jQuery(el).val() == $cityID) {
-									jQuery(el).attr(\"checked\",\"checked\");
-								}
-								else {
-									jQuery(el).removeAttr(\"checked\");
-								}
-							}
-					);
-					jQuery(\"#Category input\").each(
-							function(i, el){
-								if($categoryID > 0 && jQuery(el).val() == $categoryID) {
-									jQuery(el).attr(\"checked\",\"checked\");
-								}
-								else {
-									jQuery(el).removeAttr(\"checked\");
-								}
-							}
-					);
-
-				}
-			);
-		", "CityAndCategoryLink");
 		$actions = new FieldSet(new FormAction('filter', _t('AllMerchantsPage_Controller.FILTER', 'Filter')));
 		return new Form($this, 'FilterForm', $fields, $actions);
 	}
 
+
 	function filter($data = null, $form = null) {
-
-		//CREATE RESULTS
-		$results = array(
-			//put products first!
-			'Products' => $this->Products(),
-			'Merchants' => $this->Merchants()
-		);
-
 		//RETURN AJAX / NORMAL
 		if(Director::is_ajax()) {
-			foreach($results as $name => $result) {
-				$results[$name] = $this->customise(array($name => $result))->renderWith("{$name}Holder");
-			}
-			return Convert::array2json($results);
+			$variablesForTemplateArray["Products"] = array();
+			$variablesForTemplateArray["Products"] = ($this->renderWith("ProductsHolder"));
+			$variablesForTemplateArray["FilterForm"] = $form;
+			return Convert::array2json($variablesForTemplateArray);
 		}
-		$results["FilterForm"] = $form;
-		return $results;
+		else {
+			return Array();
+		}
 	}
 
 	/****************************************
 	 * TEMPLATE CONTROLLERS
 	 ****************************************/
 
-	function ProductCount(){
-		return $this->productCount;
-	}
-
-	function MerchantCount(){
-		return $this->merchantCount;
-	}
-
-	private static $merchants_cache = null;
-
-	function Merchants($filter = null) {
-		if(self::$merchants_cache === null) {
-			$filters = array();
-			if($filter) {
-				$filters[] = $filter;
-			}
-			if($this->Products() && count($this->productArray) > 0) {
-				$productArrayAsString = implode(",", $this->productArray);
-				$join = 'INNER JOIN Product_ProductGroups ON SiteTree'.$this->stageAppendix().'.ID = ProductGroupID';
-				$filters[] = 'ProductID IN (' . $productArrayAsString . ')';
-				if($this->cityFilter) {
-					$filters[] = $this->cityFilter;
-				}
-				//glue
-				$filterAsString = implode(') AND (', $filters);
-				$filter = "(".$filterAsString.") AND ".MerchantLocation::get_active_filter();
-				$sort = "LastEdited DESC";
-				$this->merchantArray = array();
-				$merchants = DataObject::get(
-					"MerchantLocation",
-					$filter,
-					$sort,
-					$join
-				);
-				if($merchants) {
-					foreach($merchants as $merchant) {
-						$this->merchantArray[$merchant->ID] = $merchant->ID;
-					}
-				}
-				$this->merchantCount = count($this->merchantArray);
-				$merchantArrayAsString = implode(",", $this->merchantArray);
-				Session::set("merchantArrayAsString", $merchantArrayAsString);
-				$sortbyAndFilterIDMakerArray = $this->sortbyAndFilterIDMaker($this->merchantArray, $this->merchantOffSet(), $this->merchantsPerPage, "MerchantLocation".$this->stageAppendix());
-				self::$merchants_cache = DataObject::get(
-					'MerchantLocation',
-					$sortbyAndFilterIDMakerArray["Filter"],
-					$sortbyAndFilterIDMakerArray["Sort"]
-				);
-			}
-		}
-		return self::$merchants_cache;
-	}
-
+	/**
+	 *
+	 * @var DataObjectSet
+	 */
 	private static $products_cache = null;
 
+	/**
+	 *
+	 * @param String $filter
+	 * @return DataObjectSet
+	 */
 	function Products($filter = null) {
 		if(self::$products_cache === null) {
-			$data = Convert::raw2sql($_REQUEST);
-
 			$filters = array();
 			if($filter !== null) {
 				$filters[] = $filter;
 			}
 			$joins = array();
-			if(isset($data[ucfirst(self::$city_param)])) {
-				$this->cityFilter = 'CityID IN (' . implode(',', ($data[ucfirst(self::$city_param)])) . ')';
-				$filters[] = $this->cityFilter;
+			//category
+			if($this->categoryID) {
+				$filters[] = ' MerchantProduct_Categories.CategoryID  = ' . $this->categoryID . ' ';
+				$joins[] = 'INNER JOIN MerchantProduct_Categories ON SiteTree'.$this->stageAppendix().'.ID = MerchantProductID';
+			}
+			//merchants
+			if($this->merchantPageID) {
+				$filters[] = ' SiteTree'.$this->stageAppendix().'.ParentID = '.$this->merchantPageID;
+			}
+			//city
+			if($this->cityID) {
+				$filters[] = ' CityID = '.$this->cityID. ' ';
 				$joins[] = 'INNER JOIN Product_ProductGroups ON SiteTree'.$this->stageAppendix().'.ID = ProductID';
 				$joins[] = 'INNER JOIN MerchantLocation'.$this->stageAppendix().' ON MerchantLocation'.$this->stageAppendix().'.ID = ProductGroupID';
 			}
-			if(isset($data[ucfirst(self::$category_param)])) {
-				$filters[] = 'MerchantProduct_Categories.CategoryID IN (' . implode(',', ($data[ucfirst(self::$category_param)])) . ')';
-				$joins[] = 'INNER JOIN MerchantProduct_Categories ON SiteTree'.$this->stageAppendix().'.ID = MerchantProductID';
+			//priceFrom
+			if($this->priceFrom) {
+				$filters[] = ' Product'.$this->stageAppendix().'.Price >= '.$this->priceFrom;
+			}
+			//priceTo
+			if($this->priceUpTo) {
+				$filters[] = ' Product'.$this->stageAppendix().'.Price <= '.$this->priceUpTo;
 			}
 			$filters[] = MerchantProduct::get_active_filter();
-			$sort = "LastEdited DESC";
+			$sort = "Sort ASC";
 
 			//GLUE
 			$filter = '('.implode(') AND (', $filters).')';
 			$join = count($joins) ? implode(' ', $joins) : '';
 
 			//Select Products
+			unset($this->productArray);
 			$this->productArray = array();
 			$products = DataObject::get(
 				"MerchantProduct",
@@ -313,8 +488,8 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			}
 			$this->productCount = count($this->productArray);
 			$productArrayAsString = implode(",", $this->productArray);
-			Session::set("productArrayAsString", $productArrayAsString);
-			$sortbyAndFilterIDMakerArray = $this->sortbyAndFilterIDMaker($this->productArray, $this->productOffSet(), $this->productsPerPage, "MerchantProduct".$this->stageAppendix());
+			Session::set(self::get_merchant_product_session_array_name(), $productArrayAsString);
+			$sortbyAndFilterIDMakerArray = $this->sortbyAndFilterIDMaker($this->productArray, $this->productOffSet(), $this->productsPerPage(), "MerchantProduct".$this->stageAppendix());
 			self::$products_cache = DataObject::get(
 				'MerchantProduct',
 				$sortbyAndFilterIDMakerArray["Filter"],
@@ -324,82 +499,120 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		return self::$products_cache;
 	}
 
-	function MoreProductsLink(){
-		$currentEndPoint = intval($this->productOffSet() + $this->productsPerPage);
-		if($this->productCount > $currentEndPoint) {
-			return $this->Link("moreproducts")."?productoffset=".$currentEndPoint."&amp;ppp=".$this->productsPerPage."&amp;count=".$this->productCount;
+	/**
+	 * returns Link to show more products using Ajax
+	 * @return String
+	 */
+	public function MoreProductsLink(){
+		$currentEndPoint = intval($this->productOffSet() + $this->productsPerPage());
+		if($this->productCount() > ($currentEndPoint)) {
+			$link = $this->Link("moreproducts");
+			$link .= "?pos=".$currentEndPoint."&amp;ppp=".$this->productsPerPage();
+			$link .= $this->filterGetVariables();
+			return $link;
 		}
 	}
 
-	function MoreMerchantsLink(){
-		$currentEndPoint = intval($this->merchantOffSet() + $this->merchantsPerPage);
-		if($this->merchantCount > $currentEndPoint) {
-			return $this->Link("moremerchants")."?merchantoffset=".$currentEndPoint."&amp;ppp=".$this->merchantsPerPage."&amp;count=".$this->merchantCount;;
-		}
+	/**
+	 * link for current page
+	 * @return String
+	 */
+	public function CurrentPageLink(){
+		$currentEndPoint = intval($this->productOffSet() + $this->productsPerPage());
+		$link = $this->Link("");
+		$link .= "?ppp=".$currentEndPoint;
+		$link .= $this->filterGetVariables();
+		return $link;
 	}
+
+	/**
+	 * total number of products available for current filter
+	 * @return Int
+	 */
+	function ProductCount(){
+		return $this->productCount;
+	}
+
+	/**
+	 * total number of products already showing
+	 * @return Int
+	 */
+	public function CurrentlyShowing(){
+		return $this->productOffSet()+$this->productsPerPage();
+	}
+
 
 
 	/****************************************
-	 * SQL HELPER FUNCTIONS
+	 * HELPER FUNCTIONS
 	 ****************************************/
+
+
+	/**
+	 * additional variables for template rendering
+	 * @return Array
+	 */
+	protected function variablesForTemplate(){
+		$variablesForTemplateArray = array(
+			"ProductCount" => $this->ProductCount(),
+			"CurrentlyShowing" => $this->CurrentlyShowing(),
+			"CurrentPageLink" => $this->CurrentPageLink()
+		);
+		return $variablesForTemplateArray;
+	}
+
+	protected function filterGetVariables(){
+		$getVariables = "";
+		$getVariables .= $this->CategoryLink($this->categoryID, false);
+		$getVariables .= $this->MerchantPageLink($this->merchantPageID, false);
+		$getVariables .= $this->CityLink($this->cityID, false);
+		$getVariables .= $this->PriceFromLink($this->priceOptionsFrom, false);
+		$getVariables .= $this->PriceUpToLink($this->priceOptionsUpTo, false);
+		return $getVariables;
+	}
+
 
 	protected function productLimit(){
 		$offSet = $this->productOffSet();
-		$perPage = $this->productsPerPage;
-		return "$offSet, $perPage";
-	}
-
-	protected function merchantLimit(){
-		$offSet = $this->merchantOffSet();
-		$perPage = $this->merchantsPerPage;
+		$perPage = $this->productsPerPage();
 		return "$offSet, $perPage";
 	}
 
 	protected function productOffSet(){
-		$offSet = 0;
-		if(isset($_GET["productoffset"])) {
-			$offSet = intval($_GET["productoffset"]);
-		}
-		return $offSet;
+		return $this->productOffSet;
 	}
 
-	protected function merchantOffSet(){
-		$offSet = 0;
-		if(isset($_GET["merchantoffset"])) {
-			$offSet = intval($_GET["merchantoffset"]);
-		}
-		return $offSet;
+	protected function productsPerPage(){
+		return $this->productsPerPage;
 	}
+
 
 	protected function sortbyAndFilterIDMaker(Array $array, $offSet, $perPage, $table){
 		$count = 0;
-		$sortString = "";
-		$closingBracket = ", 999";
 		$min = $offSet;
 		$max = ($offSet + $perPage);
-		$filterSting = $table.".ID IN (";
+		$sortString = "IF(".$table.".ID=0, 0";
+		$closingBracket = ", 999)";
+		$filterSting = $table.".ID IN (0";
 		if(count($array)) {
 			foreach($array as $value) {
 				$count++;
 				if($count > $min && $count <= $max ) {
-					if($count > ($min + 1)) {
-						$sortString .= ",";
-						$filterSting .= ",";
-					}
-					$sortString .= "IF(".$table.".ID=$value, $count";
+					$sortString .= ", IF(".$table.".ID=$value, $count";
 					$closingBracket .= ")";
-					$filterSting .= "$value";
+					$filterSting .= ", $value";
 				}
 			}
 			$filterSting .= ")";
 			return array(
-				"Sort" => $sortString."".$closingBracket." ASC",
-				"Filter" => $filterSting
+				"Filter" => $filterSting,
+				"Sort" => $sortString."".$closingBracket." ASC"
 			);
+
 		}
 		return array(
-			"Sort" => "",
-			"Filter" => ""
+			"Filter" => "-1 = 0",
+			"Sort" => ""
 		);
 	}
 

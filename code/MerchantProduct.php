@@ -14,12 +14,14 @@ class MerchantProduct extends Product {
 	protected static $active_filter = 'ShowInSearch = 1 AND AllowPurchase = 1';
 	public static function get_active_filter() {
 		$filter = self::$active_filter;
-		$merchantID = Cookie::get(Page_Controller::$merchant_param);
+		$merchantID = intval(Cookie::get(Page_Controller::get_merchant_param()));
 		if($merchantID) {
 			$filter .= " AND ParentID = $merchantID";
 		}
 		return $filter;
 	}
+
+	protected static $minimum_sort = 100000;
 
 	static $default_parent = 'MerchantPage';
 
@@ -106,6 +108,9 @@ class MerchantProduct extends Product {
 		parent::onBeforeWrite();
 		$this->MetaTitle = $this->Title;
 		$this->MetaDescription = strip_tags($this->Content);
+		if($this->Sort < self::$minimum_sort) {
+			$this->Sort = $this->Sort + self::$minimum_sort;
+		}
 	}
 
 	function onAfterWrite() {

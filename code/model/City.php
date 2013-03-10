@@ -16,7 +16,7 @@ class City extends DataObject {
 	function Link() {
 		$page = DataObject::get_one('AllMerchantsPage');
 		if($page) {
-			return $page->CityLink($this);
+			return $page->CityLink($this->ID, true);
 		}
 	}
 

@@ -34,7 +34,7 @@ class Category extends DataObject {
 	function Link() {
 		$page = DataObject::get_one('AllMerchantsPage');
 		if($page) {
-			return $page->CategoryLink($this);
+			return $page->CategoryLink($this->ID, true);
 		}
 	}
 

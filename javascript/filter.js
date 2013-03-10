@@ -15,7 +15,7 @@ var AllMerchantsPageFilter = {
 		var location = AllMerchantsPageFilter.getURLWithoutGetVars();
 
 		if(location) {
-			jQuery(form).find(".checkboxset").each(
+			jQuery(form).find(".dropdown").each(
 				function(){
 					var id = jQuery(this).attr("id");
 					var selected = AllMerchantsPageFilter.getUrlVars()[(id + '').toLowerCase()];
@@ -24,7 +24,7 @@ var AllMerchantsPageFilter = {
 			);
 		}
 
-		jQuery(form).find('input').change(
+		jQuery(form).find('select').change(
 			function() {
 				var url = jQuery(form).attr('action');
 				var action = jQuery(form).find('input[type=submit]').attr('name');
@@ -35,10 +35,12 @@ var AllMerchantsPageFilter = {
 					data: jQuery(form).serialize(),
 					dataType: 'json',
 					success: function(response) {
-						jQuery.each(response,
+						jQuery.each(
+							response,
 							function(id, html) {
 								jQuery('#' + id).html(html).triggerHandler('onAfterWrite');
 								AllMerchantsPageFilter.initMoreLinks('#' + id);
+								AllMerchantsPageFilter.updateLink();
 							}
 						);
 					}
@@ -58,12 +60,21 @@ var AllMerchantsPageFilter = {
 					url,
 					function(data,status,xhr) {
 						jQuery(parent).remove();
+						jQuery("#AllMerchantsPageCurrentLink").remove();
 						jQuery("#"+target).append(data);
 						AllMerchantsPageFilter.initMoreLinks("#"+target);
+						AllMerchantsPageFilter.updateLink();
 					}
 				);
 			}
 		)
+	},
+
+	updateLink: function(){
+		var obj = jQuery("#AllMerchantsPageCurrentLink a");
+		if(obj.length) {
+			window.history.replaceState('Object', '', obj.attr("href"));
+		}
 	},
 
 	getUrlVars: function (){

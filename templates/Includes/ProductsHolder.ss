@@ -16,7 +16,12 @@
 		</p>
 	</li>
 <% end_control %>
-<% if MoreProductsLink %><li class="allMerchantsPageMore"><a href="$MoreProductsLink" rel="Products">Meer Produkten</a></li><% end_if %>
+<% if MoreProductsLink %><li class="allMerchantsPageMore"><a href="$MoreProductsLink" rel="Products">More Products (currently showing $CurrentlyShowing / $ProductCount)</a></li><% end_if %>
 <% else %>
 <li><p><% _t('AllMerchantsPage.NO_PRODUCTS', 'Er zijn geen producten gevonden.') %></p></li>
+<% end_if %>
+<% if CurrentPageLink %>
+<li style="display: none;" id="AllMerchantsPageCurrentLink">
+<a href="$CurrentPageLink">reload page</a>
+</li>
 <% end_if %>
