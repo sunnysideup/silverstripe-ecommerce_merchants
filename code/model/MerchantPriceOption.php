@@ -2,6 +2,10 @@
 
 class MerchantPriceOption extends DataObject {
 
+	protected static $currency_symbol = "$";
+	static function set_currency_symbol($s) {self::$currency_symbol = $s;}
+	static function get_currency_symbol() {return self::$currency_symbol;}
+
 	static $db = array(
 		'Price' => 'Currency',
 		'ShowInFrom' => 'Boolean',
@@ -26,7 +30,7 @@ class MerchantPriceOption extends DataObject {
 		function i18n_plural_name() {return _t('MerchantPriceOption.PLURALNAME', self::$plural_name);}
 
 	function getPriceNice(){
-		return Payment::site_currency().round($this->Price, 2);
+		return self::get_currency_symbol().round($this->Price, 2);
 	}
 
 	function getPriceInt(){

@@ -396,7 +396,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		else {
 			$priceOptionsFrom = array();
 		}
-		$priceOptionsFrom = array( 0 => _t("Merchants.FROM", "-- From")) + $priceOptionsFrom;
+		$priceOptionsFrom = array( 0 => _t("Merchants.UNSELECTED_FROM_PRICE", "-- From")) + $priceOptionsFrom;
 		//priceOptionsUpTo
 		$priceOptionsUpTo = DataObject::get('MerchantPriceOption', "ShowInUpTo = 1");
 		if($priceOptionsUpTo) {
@@ -405,7 +405,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		else {
 			$priceOptionsUpTo = array();
 		}
-		$priceOptionsUpTo = array( 0 => _t("Merchants.UPTO", "-- Up To")) + $priceOptionsUpTo;
+		$priceOptionsUpTo = array( 0 => _t("Merchants.UNSELECTED_UPTO_PRICE", "-- Up To")) + $priceOptionsUpTo;
 
 		//==============================
 		// CREATE DROPDOWNS
