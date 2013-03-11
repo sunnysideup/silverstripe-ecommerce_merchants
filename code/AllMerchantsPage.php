@@ -636,7 +636,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		return self::$stage_appendix_cache;
 	}
 
-	function Debug(){
+	function MyDebug(){
 		if($this->mydebug) {
 			return
 				print_r($this->productArray, 1).

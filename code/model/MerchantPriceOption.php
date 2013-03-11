@@ -26,7 +26,7 @@ class MerchantPriceOption extends DataObject {
 		function i18n_plural_name() {return _t('MerchantPriceOption.PLURALNAME', self::$plural_name);}
 
 	function getPriceNice(){
-		return round($this->Price, 2);
+		return Payment::site_currency().round($this->Price, 2);
 	}
 
 	function getPriceInt(){
