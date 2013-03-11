@@ -36,6 +36,22 @@ class MerchantPage extends ProductGroup {
 		return $this->canFrontEndEdit($member);
 	}
 
+	protected static $active_filter = 'ShowInSearch = 1';
+	public static function get_active_filter($checkMerchant = true) {
+		$filter = self::$active_filter;
+		if($checkMerchant) {
+			$merchantID = intval(Cookie::get(Page_Controller::get_merchant_param()));
+			if($merchantID) {
+				$table = $this->ClassName;
+				if(Versioned::current_stage() == "Live") {
+					$table .= "_Live";
+				}
+				$filter .= " AND $table.ID = $merchantID";
+			}
+		}
+		return $filter;
+	}
+
 	/****************************************
 	 * CRUD Forms
 	 ****************************************/

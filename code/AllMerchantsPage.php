@@ -369,7 +369,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		}
 		$categories = array( 0 => _t("Merchants.ALL_CATEGORIES", "-- All Categories")) + $categories;
 		//merchants
-		$merchantPages = DataObject::get('MerchantPage');
+		$merchantPages = DataObject::get('MerchantPage', MerchantPage::get_active_filter());
 		if($merchantPages) {
 			$merchantPages = $merchantPages->map();
 		}
