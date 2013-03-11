@@ -340,6 +340,11 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		}
 	}
 
+	function index(){
+		Session::set(self::get_merchant_product_session_array_name(), null);
+		Session::clear(self::get_merchant_product_session_array_name());
+		Session::save();
+	}
 
 	/****************************************
 	 * FORMS
