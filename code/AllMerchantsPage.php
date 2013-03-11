@@ -64,6 +64,10 @@ class AllMerchantsPage extends ProductGroup {
 		foreach(array('Images', 'ProductDisplay', 'OtherProductsShown') as $name) {
 			$fields->removeByName($name);
 		}
+		$fields->addFieldToTab(
+			"ProductsPerLoad",
+			new NumericField("NumberOfProductsPerPage", _t("ProductGroup.PRODUCTSPERPAGE", "Number of products per page"))
+		);
 		return $fields;
 	}
 
@@ -259,6 +263,9 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//ppp
 		if(isset($_REQUEST[self::get_ppp_param()]) && $_REQUEST[self::get_ppp_param()]) {
 			$this->productsPerPage = intval($_REQUEST[self::get_ppp_param()]);
+		}
+		else {
+			$this->productsPagePage = $this->NumberOfProductsPerPage;
 		}
 
 		if(isset($_REQUEST["mydebug"])) {
