@@ -1,7 +1,7 @@
 jQuery(document).ready(
 	function() {
 		AllMerchantsPageFilter.init();
-		AllMerchantsPageFilter.initMoreLinks();
+		AllMerchantsPageFilter.initMoreLinks("#ProductsHolder");
 	}
 );
 
@@ -49,7 +49,7 @@ var AllMerchantsPageFilter = {
 		);
 	},
 
-	initMoreLinks: function(filter = "body"){
+	initMoreLinks: function(filter){
 		jQuery(filter).find(".allMerchantsPageMore a").click(
 			function(e) {
 				e.preventDefault();
