@@ -42,11 +42,11 @@ class MerchantPage extends ProductGroup {
 		if($checkMerchant) {
 			$merchantID = intval(Cookie::get(Page_Controller::get_merchant_param()));
 			if($merchantID) {
-				$table = $this->ClassName;
+				$table = "MerchantPage";
 				if(Versioned::current_stage() == "Live") {
 					$table .= "_Live";
 				}
-				$filter .= " AND $table.ID = $merchantID";
+				$filter .= " AND ".$table.".ID = ".($merchantID-0);
 			}
 		}
 		return $filter;
