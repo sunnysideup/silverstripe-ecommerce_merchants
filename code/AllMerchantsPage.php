@@ -376,7 +376,9 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		else {
 			$merchantPages = array();
 		}
-		$merchantPages = array( 0 => _t("Merchants.ALL_MERCHANTS", "-- All Merchants")) + $merchantPages;
+		if(count($merchantPages) > 1) {
+			$merchantPages = array( 0 => _t("Merchants.ALL_MERCHANTS", "-- All Merchants")) + $merchantPages;
+		}
 		//city
 		$cities = DataObject::get('City');
 		if($cities) {
