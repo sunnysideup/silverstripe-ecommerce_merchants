@@ -344,6 +344,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		Session::set(self::get_merchant_product_session_array_name(), null);
 		Session::clear(self::get_merchant_product_session_array_name());
 		Session::save();
+		return array();
 	}
 
 	/****************************************
@@ -423,8 +424,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	function filter($data = null, $form = null) {
 		//RETURN AJAX / NORMAL
 		if(Director::is_ajax()) {
-			$variablesForTemplateArray["Products"] = array();
-			$variablesForTemplateArray["Products"] = ($this->renderWith("ProductsHolder"));
+			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["FilterForm"] = $form;
 			return Convert::array2json($variablesForTemplateArray);
 		}
