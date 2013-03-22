@@ -65,7 +65,7 @@ class AllMerchantsPage extends ProductGroup {
 			$fields->removeByName($name);
 		}
 		$fields->addFieldToTab(
-			"ProductsPerLoad",
+			"Root.Content.ProductsPerLoad",
 			new NumericField("NumberOfProductsPerPage", _t("ProductGroup.PRODUCTSPERPAGE", "Number of products per page"))
 		);
 		return $fields;
@@ -265,7 +265,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			$this->productsPerPage = intval($_REQUEST[self::get_ppp_param()]);
 		}
 		else {
-			$this->productsPagePage = $this->NumberOfProductsPerPage;
+			$this->productsPerPage = $this->NumberOfProductsPerPage;
 		}
 
 		if(isset($_REQUEST["mydebug"])) {
@@ -396,7 +396,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		}
 		$cities = array( 0 => _t("Merchants.ALL_CITIES", "-- All Cities")) + $cities;
 		//priceOptionsFrom
-		$priceOptionsFrom = DataObject::get('MerchantPriceOption', "ShowInFrom = 1");
+		$priceOptionsFrom = DataObject::get('MerchantPriceOption', "ShowInFrom = 1", "DefaultFrom ASC, Price ASC");
 		if($priceOptionsFrom) {
 			$priceOptionsFrom = $priceOptionsFrom->map("PriceInt", "PriceNice");
 		}
@@ -405,7 +405,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		}
 		$priceOptionsFrom = array( 0 => _t("Merchants.UNSELECTED_FROM_PRICE", "-- From")) + $priceOptionsFrom;
 		//priceOptionsUpTo
-		$priceOptionsUpTo = DataObject::get('MerchantPriceOption', "ShowInUpTo = 1");
+		$priceOptionsUpTo = DataObject::get('MerchantPriceOption', "ShowInUpTo = 1", "DefaultUpTo ASC, Price ASC");
 		if($priceOptionsUpTo) {
 			$priceOptionsUpTo = $priceOptionsUpTo->map("PriceInt", "PriceNice");
 		}
@@ -488,7 +488,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$filters[] = ' Product'.$this->stageAppendix().'.Price <= '.$this->priceUpTo;
 			}
 			$filters[] = MerchantProduct::get_active_filter();
-			$sort = "LastEdited DESC";
+			$sort = "RAND() DESC";
 
 			//GLUE
 			$filter = '('.implode(') AND (', $filters).')';
@@ -506,7 +506,9 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			if($products) {
 				foreach($products as $product) {
 					if($product->canPurchase()) {
-						$this->productArray[$product->ID] = $product->ID;
+						if($product->Status == "Published") {
+							$this->productArray[$product->ID] = $product->ID;
+						}
 					}
 				}
 			}

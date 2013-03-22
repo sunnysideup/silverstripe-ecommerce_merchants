@@ -26,7 +26,33 @@ var AllMerchantsPageFilter = {
 
 		jQuery(form).find('select').change(
 			function() {
+
+				minPrice = parseInt(jQuery("select[name='pricefrom']").val());
+				maxPrice = parseInt(jQuery("select[name='priceupto']").val());
+				if(minPrice > 0 && maxPrice > 0 && (maxPrice <= minPrice)) {
+					if(jQuery(this).attr("name") == "pricefrom") {
+						var makeMaxHigher = true;
+						var thatSelector = "select[name='priceupto']";
+					}
+					else {
+						var makeMaxHigher = false;
+						var thatSelector = "select[name='pricefrom']";
+					}
+					jQuery(thatSelector + " option").each(
+						function(){
+							value = jQuery(this).val();
+							if(makeMaxHigher && (value > minPrice)){
+								jQuery(thatSelector).val(value); //change();
+							}
+							else if(!makeMaxHigher && (value < maxPrice)) {
+								jQuery(thatSelector).val(value); //change();
+							}
+						}
+					);
+				}
+
 				var url = jQuery(form).attr('action');
+				jQuery(form).addClass("loading");
 				var action = jQuery(form).find('input[type=submit]').attr('name');
 				url = url.substr(0, url.lastIndexOf('/') + 1) + action.substr('action_'.length);
 				jQuery.ajax({
@@ -35,6 +61,7 @@ var AllMerchantsPageFilter = {
 					data: jQuery(form).serialize(),
 					dataType: 'json',
 					success: function(response) {
+						jQuery(form).removeClass("loading");
 						jQuery.each(
 							response,
 							function(id, html) {
@@ -47,6 +74,11 @@ var AllMerchantsPageFilter = {
 				});
 			}
 		);
+
+		this.initInfiniteScroll();
+
+		this.checkMinAndMax();
+
 	},
 
 	initMoreLinks: function(filter){
@@ -56,6 +88,7 @@ var AllMerchantsPageFilter = {
 				var url = jQuery(this).attr("href");
 				var target = jQuery(this).attr("rel");
 				var parent = jQuery(this).parent();
+				jQuery(this).addClass("loading");
 				jQuery.get(
 					url,
 					function(data,status,xhr) {
@@ -94,8 +127,38 @@ var AllMerchantsPageFilter = {
 	getURLWithoutGetVars: function (){
 		var location = window.location.href.slice(0, window.location.href.indexOf('?') -1);
 		return location;
-	}
+	},
 
+	/**
+	 * auto-clicks the more button
+	 * when during scrolling the scrollTop is equal to
+	 * document.height - window.height (i.e. you are at the end of the document)
+	 *
+	 */
+	initInfiniteScroll: function(){
+		jQuery(window).scroll(function() {
+			if(jQuery(window).scrollTop() == jQuery(document).height() - jQuery(window).height()) {
+				if(jQuery('.allMerchantsPageMore a').length) {
+					jQuery('.allMerchantsPageMore a').click();
+				}
+			}
+		});
+	},
+
+	/**
+	 * check Min and Max Price and adjust if there are problems
+	 *
+	 *
+	 */
+	checkMinAndMax: function(){
+		jQuery("select[name='pricefrom'], select[name='priceupto']").change(
+			function(){
+
+
+
+			}
+		);
+	}
 
 }
 

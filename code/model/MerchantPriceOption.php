@@ -9,7 +9,9 @@ class MerchantPriceOption extends DataObject {
 	static $db = array(
 		'Price' => 'Currency',
 		'ShowInFrom' => 'Boolean',
-		'ShowInUpTo' => 'Boolean'
+		'ShowInUpTo' => 'Boolean',
+		'DefaultFrom' => 'Boolean',
+		'DefaultUpTo' => 'Boolean'
 	);
 
 	static $casting = array(
@@ -18,7 +20,11 @@ class MerchantPriceOption extends DataObject {
 	);
 
 	static $summaryfields = array(
-		'Price' => 'Price'
+		'Price' => 'Price',
+		'ShowInFrom' => 'Boolean',
+		'ShowInUpTo' => 'Boolean',
+		'DefaultFrom' => 'Boolean',
+		'DefaultUpTo' => 'Boolean'
 	);
 
 	static $sort = "Price ASC";
@@ -45,6 +51,7 @@ class MerchantPriceOption extends DataObject {
 			$link .= $page->PriceUpToLink($this->Price, false);
 			return $link;
 		}
+		return "/";
 	}
 
 }
