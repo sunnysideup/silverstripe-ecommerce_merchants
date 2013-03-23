@@ -506,6 +506,10 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			if($products) {
 				foreach($products as $product) {
 					if($product->canPurchase()) {
+						if(isset($_GET["flush"])) {
+							$product->writeToStage('Stage');
+							$product->publish("Stage", "Live");
+						}
 						if($product->Status == "Published") {
 							$this->productArray[$product->ID] = $product->ID;
 						}
