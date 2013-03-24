@@ -342,7 +342,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			return $this->customise($variablesForTemplateArray)->renderWith("ProductsHolder");
 		}
 		else {
-			$this->redirect($this->Link()."?".str_replace('&amp;', '&', $this->filterGetVariables()));
+			//$this->redirect($this->Link()."?".str_replace('&amp;', '&', $this->filterGetVariables()));
 			return Array();
 		}
 	}
@@ -505,11 +505,11 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			);
 			if($products) {
 				foreach($products as $product) {
+					if(isset($_GET["flush"])) {
+						$product->writeToStage('Stage');
+						$product->publish("Stage", "Live");
+					}
 					if($product->canPurchase()) {
-						if(isset($_GET["flush"])) {
-							$product->writeToStage('Stage');
-							$product->publish("Stage", "Live");
-						}
 						if($product->Status == "Published") {
 							$this->productArray[$product->ID] = $product->ID;
 						}

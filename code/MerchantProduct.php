@@ -162,7 +162,7 @@ class MerchantProduct_Controller extends Product_Controller {
 		if($this->canFrontEndEdit()) {
 			try {
 				$form->saveInto($this->dataRecord); // Call on dataRecord to fix SimpleImageField issue
-				$this->MenuTitle = $this->Title; // Copy of the title on the menu title
+				$this->dataRecord->MenuTitle = $this->dataRecord->Title; // Copy of the title on the menu title
 				$this->dataRecord->URLSegment = null; // To reset the value of the URLSegment in the onBeforeWrite of SiteTree
 				$this->writeToStage('Stage');
 				$this->Publish('Stage', 'Live');

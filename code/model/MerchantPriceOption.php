@@ -27,7 +27,7 @@ class MerchantPriceOption extends DataObject {
 		'DefaultUpTo' => 'Boolean'
 	);
 
-	static $sort = "Price ASC";
+	static $default_sort = "Price ASC";
 
 	static $singular_name = 'Price Option';
 		function i18n_singular_name() {return _t('MerchantPriceOption.SINGULARNAME', self::$singular_name);}

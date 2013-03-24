@@ -37,6 +37,7 @@ class MerchantPage extends ProductGroup {
 	}
 
 	protected static $active_filter = 'ShowInSearch = 1';
+
 	public static function get_active_filter($checkMerchant = true) {
 		$filter = self::$active_filter;
 		if($checkMerchant) {
@@ -80,6 +81,14 @@ class MerchantPage extends ProductGroup {
 
 	function Locations() {
 		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID AND " . MerchantLocation::get_active_filter(false));
+	}
+
+	function LocationsIncludingHiddenOnes() {
+		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID", "\"ShowInMenus\" DESC, \"Sort\" ASC");
+	}
+
+	function ProductsIncludingHiddenOnes() {
+		return DataObject::get('MerchantProduct', "\"ParentID\" = $this->ID", "\"AllowPurchase\" DESC, \"Sort\" ASC");
 	}
 
 	function Products() {

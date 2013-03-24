@@ -7,6 +7,9 @@ jQuery(document).ready(
 
 var AllMerchantsPageFilter = {
 
+	useInfiniteScroll: false,
+		set_UseInfiniteScroll: function(b) {this.useInfiniteScroll = b;},
+
 	init: function() {
 		var form = jQuery('form#Form_FilterForm');
 
@@ -87,16 +90,30 @@ var AllMerchantsPageFilter = {
 				e.preventDefault();
 				var url = jQuery(this).attr("href");
 				var target = jQuery(this).attr("rel");
-				var parent = jQuery(this).parent();
-				jQuery(this).addClass("loading");
-				jQuery.get(
-					url,
-					function(data,status,xhr) {
-						jQuery(parent).remove();
-						jQuery("#AllMerchantsPageCurrentLink").remove();
-						jQuery("#"+target).append(data);
-						AllMerchantsPageFilter.initMoreLinks("#"+target);
-						AllMerchantsPageFilter.updateLink();
+				jQuery(".allMerchantsPageMore").addClass("loading");
+				jQuery.ajax(
+					{
+						"url": url,
+						"success": function(data,status,xhr) {
+							jQuery("#AllMerchantsPageCurrentLink, .allMerchantsPageMore").remove();
+							jQuery("#"+target).append(data);
+							AllMerchantsPageFilter.initMoreLinks("#"+target);
+							AllMerchantsPageFilter.updateLink();
+						},
+						"error": function(XMLHttpRequest, textStatus, errorThrown) {
+							if (XMLHttpRequest.status == 0) {
+								alert('Could not connect to website.');
+							}
+							else if (XMLHttpRequest.status == 404) {
+								alert('Requested URL not found.');
+							}
+							else if (XMLHttpRequest.status == 500) {
+								alert('Internel Server Error.');
+							}
+							else {
+							 alert('Unknow Error.\n' + XMLHttpRequest.responseText);
+							}
+						}
 					}
 				);
 			}
@@ -136,13 +153,15 @@ var AllMerchantsPageFilter = {
 	 *
 	 */
 	initInfiniteScroll: function(){
-		jQuery(window).scroll(function() {
-			if(jQuery(window).scrollTop() == jQuery(document).height() - jQuery(window).height()) {
-				if(jQuery('.allMerchantsPageMore a').length) {
-					jQuery('.allMerchantsPageMore a').click();
+		if(this.useInfiniteScroll) {
+			jQuery(window).scroll(function() {
+				if(jQuery(window).scrollTop() == jQuery(document).height() - jQuery(window).height()) {
+					if(jQuery('.allMerchantsPageMore a').length) {
+						jQuery('.allMerchantsPageMore a').click();
+					}
 				}
-			}
-		});
+			});
+		}
 	},
 
 	/**
