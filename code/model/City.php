@@ -13,6 +13,8 @@ class City extends DataObject {
 	public static $plural_name = 'Cities';
 		function i18n_plural_name() {return _t('City.PLURALNAME', self::$plural_name);}
 
+	static $default_sort = "\"Name\" ASC";
+
 	function Link() {
 		$page = DataObject::get_one('AllMerchantsPage');
 		if($page) {

@@ -4,7 +4,8 @@ class Category extends DataObject {
 
 	static $db = array(
 		'Name' => 'Varchar',
-		'Featured' => 'Boolean'
+		'Featured' => 'Boolean',
+		'Sort' => "Int"
 	);
 
 	static $has_one = array(
@@ -17,13 +18,20 @@ class Category extends DataObject {
 		'Products' => 'MerchantProduct'
 	);
 
+	static $indexes = array(
+		'Sort' => true
+	);
+
 	static $casting = array(
 		'Code' => 'Varchar'
 	);
 
 	static $field_labels = array(
-		'Featured' => 'Is featured ?'
+		'Featured' => 'Is featured ?',
+		'Sort' => 'Sort Number (lower numbers first)'
 	);
+
+	static $default_sort = "\"Sort\" ASC";
 
 	static $singular_name = 'Category';
 		function i18n_singular_name() {return _t('Category.SINGULARNAME', self::$singular_name);}
