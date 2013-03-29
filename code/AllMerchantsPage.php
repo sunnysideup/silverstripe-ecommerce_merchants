@@ -422,7 +422,8 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			new Dropdownfield(self::get_category_param(), _t("Merchants.SELECT_CATEGORY", "Select Category"), $categories, $this->categoryID),
 			new Dropdownfield(self::get_merchant_page_param(), _t("Merchants.SELECT_MERCHANT", "Select Merchant"), $merchantPages, $this->merchantPageID),
 			new Dropdownfield(self::get_price_from_param(), _t("Merchants.PRICE_FROM", "Price From"), $priceOptionsFrom, $this->priceFrom),
-			new Dropdownfield(self::get_price_upto_param(), _t("Merchants.PRICE_UNTIL", "Price Until"), $priceOptionsUpTo, $this->priceUpTo)
+			new Dropdownfield(self::get_price_upto_param(), _t("Merchants.PRICE_UNTIL", "Price Until"), $priceOptionsUpTo, $this->priceUpTo),
+			new LiteralField("AllMerchantsPageLoadingHolder", "<div class=\"allMerchantsPageLoadingHolder\">&nbsp;</div>")
 		);
 		//reset City Form (needed to avoid discrepancies when using the Back Button)
 		$actions = new FieldSet(new FormAction('filter', _t('AllMerchantsPage_Controller.FILTER', 'Filter')));

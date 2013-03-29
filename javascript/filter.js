@@ -55,7 +55,7 @@ var AllMerchantsPageFilter = {
 				}
 
 				var url = jQuery(form).attr('action');
-				jQuery(form).addClass("loading");
+				jQuery(".allMerchantsPageLoadingHolder").addClass("loading");
 				var action = jQuery(form).find('input[type=submit]').attr('name');
 				url = url.substr(0, url.lastIndexOf('/') + 1) + action.substr('action_'.length);
 				jQuery.ajax({
@@ -64,7 +64,7 @@ var AllMerchantsPageFilter = {
 					data: jQuery(form).serialize(),
 					dataType: 'json',
 					success: function(response) {
-						jQuery(form).removeClass("loading");
+						jQuery(".allMerchantsPageLoadingHolder").removeClass("loading");
 						jQuery.each(
 							response,
 							function(id, html) {
