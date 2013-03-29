@@ -41,7 +41,7 @@ class MerchantPage extends ProductGroup {
 	public static function get_active_filter($checkMerchant = true) {
 		$filter = self::$active_filter;
 		if($checkMerchant) {
-			$merchantID = intval(Cookie::get(Page_Controller::get_merchant_param()));
+			$merchantID = AllMerchantsPage_Controller::get_only_show_filter();
 			if($merchantID) {
 				$table = "MerchantPage";
 				if(Versioned::current_stage() == "Live") {
@@ -176,8 +176,10 @@ class MerchantPage extends ProductGroup {
 
 	function OnlyShowLink() {
 		if(is_a($this, 'MerchantPage')) {
-			$page = DataObject::get_one('HomePage');
-			return $page->Link("onlyshow/{$this->URLSegment}");
+			$page = DataObject::get_one('AllMerchantsPage');
+			if($page) {
+				return $page->Link("onlyshow/{$this->URLSegment}/");
+			}
 		}
 	}
 

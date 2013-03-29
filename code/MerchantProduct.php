@@ -10,11 +10,10 @@ class MerchantProduct extends Product {
 		'Categories' => 'Category'
 	);
 
-
 	protected static $active_filter = 'ShowInSearch = 1 AND AllowPurchase = 1';
 	public static function get_active_filter() {
 		$filter = self::$active_filter;
-		$merchantID = intval(Cookie::get(Page_Controller::get_merchant_param()));
+		$merchantID = AllMerchantsPage_Controller::get_only_show_filter();;
 		if($merchantID) {
 			$filter .= " AND ParentID = $merchantID";
 		}
@@ -70,9 +69,11 @@ class MerchantProduct extends Product {
 		$categories = DataObject::get('Category');
 		$categories = $categories->map('ID', 'Name');
 		$locations = $parent->Locations();
+		$allowPurchaseField = new CheckboxField('AllowPurchase', "<a href=\"".$this->Link()."\" taget=\"_blank\">"._t('MerchantProduct.ALLOW_PURCHASE', 'For sale')."</a>");
+		$allowPurchaseField->escape = false;
 		$fields = new FieldSet(
 			new TextField('Title', _t('MerchantProduct.TITLE', 'Product name')),
-			new CheckboxField('AllowPurchase', _t('MerchantProduct.ALLOW_PURCHASE', 'For sale')),
+			$allowPurchaseField,
 			new TextareaField('Content', _t('MerchantProduct.CONTENT', 'Description')),
 			new NumericField('Price', _t('MerchantProduct.PRICE', 'Price')),
 			new TextField('InternalItemID', _t('MerchantProduct.CODE', 'Product Code')),
@@ -99,6 +100,23 @@ class MerchantProduct extends Product {
 		return $this->Link('edit');
 	}
 
+	function canPurchase($member = null){
+		if(parent::canPurchase()) {
+			$productGroups = $this->ProductGroups();
+			if($productGroups && $productGroups->count()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * includes CanPurchase + Is listed in Product Groups
+	 *
+	 */
+	public function ForSale(){
+		return $this->canPurchase(null);
+	}
 
 	/****************************************
 	 * reading and writing

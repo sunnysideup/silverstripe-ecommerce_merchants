@@ -17,7 +17,6 @@ class AllMerchantsPage extends ProductGroup {
 		return ! DataObject::get_one($this->class);
 	}
 
-
 	/**
 	 * SS standard variable
 	 * @var Array
@@ -316,6 +315,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			$this->priceUpTo = 0;
 		}
 		Requirements::javascript('ecommerce_merchants/javascript/filter.js');
+
 	}
 
 	/****************************************
@@ -418,9 +418,9 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		// CREATE DROPDOWNS
 		//==============================
 		$fields = new FieldSet(
+			new Dropdownfield(self::get_city_param(), _t("Merchants.SELECT_LOCATION", "Select Location"), $cities, $this->cityID),
 			new Dropdownfield(self::get_category_param(), _t("Merchants.SELECT_CATEGORY", "Select Category"), $categories, $this->categoryID),
 			new Dropdownfield(self::get_merchant_page_param(), _t("Merchants.SELECT_MERCHANT", "Select Merchant"), $merchantPages, $this->merchantPageID),
-			new Dropdownfield(self::get_city_param(), _t("Merchants.SELECT_LOCATION", "Select Location"), $cities, $this->cityID),
 			new Dropdownfield(self::get_price_from_param(), _t("Merchants.PRICE_FROM", "Price From"), $priceOptionsFrom, $this->priceFrom),
 			new Dropdownfield(self::get_price_upto_param(), _t("Merchants.PRICE_UNTIL", "Price Until"), $priceOptionsUpTo, $this->priceUpTo)
 		);
@@ -665,6 +665,85 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				"<hr />".
 				print_r($this->CurrentlyShowing());
 		}
+	}
+
+
+		/**
+		 * LONG TERM "ONLY SHOW" FILTER
+		 * This allows you to filter the entire website for one merchant for
+		 * xxx number of minutes
+		 *
+		 */
+		//  =======================
+
+
+	/**
+	 * The number of minutes the site will only show the particular merchant.
+	 * @var Int
+	 */
+	protected static $merchant_only_show_number_of_minutes = 30;
+		public static function set_merchant_only_show_number_of_minutes($i) {self::$merchant_only_show_number_of_minutes = $i;}
+		public static function get_merchant_only_show_number_of_minutes() {return self::$merchant_only_show_number_of_minutes;}
+
+	/**
+	 * The session variable name used to set the merchant
+	 * @var String
+	 */
+	protected static $merchant_session_param = 'merchant';
+		public static function set_merchant_session_param($s) { self::$merchant_session_param = $s;}
+		public static function get_merchant_session_param() {return self::$merchant_session_param;}
+
+	/**
+	 * Returns the ID of the Merchant set to "Only show" - if any
+	 * @var Int
+	 */
+	public static function get_only_show_filter() {
+		$time = Session::get(self::get_merchant_session_param()."_time");
+		if($time && $time > 0) {
+			$secondsPerMinute = 60;
+			if($time + ($secondsPerMinute * self::get_merchant_only_show_number_of_minutes()) < time()) {
+				Session::set(self::get_merchant_session_param(), null);
+				Session::set(self::get_merchant_session_param()."_time", null);
+				Session::clear(self::get_merchant_session_param());
+				Session::clear(self::get_merchant_session_param()."_time");
+			}
+			else {
+				return intval(Session::get(self::get_merchant_session_param()));
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 *
+	 * action to show only one merchant for particular space of time
+	 * @param SS_HTTPRequest
+	 */
+	function onlyshow($request = null) {
+		if(!empty($this->urlParams['ID'])) {
+			$merchantURLSegment = Convert::raw2sql($this->urlParams['ID']);
+			$merchant = DataObject::get_one('MerchantPage', "URLSegment = '$merchantURLSegment'");
+			if($merchant) {
+				Session::set(self::get_merchant_session_param(), $merchant->ID);
+				//mark starting time....
+				Session::set(self::get_merchant_session_param()."_time", time());
+			}
+		}
+		//reload page!
+		$this->redirect($this->Link());
+	}
+
+	/**
+	 *
+	 * action to clear the only show
+	 * @param SS_HTTPRequest
+	 */
+	function clearonlyshow($request = null) {
+		Session::set(self::get_merchant_session_param(), null);
+		Session::set(self::get_merchant_session_param()."_time", null);
+		Session::clear(self::get_merchant_session_param());
+		Session::clear(self::get_merchant_session_param()."_time");
+		return Director::redirectBack();
 	}
 
 }
