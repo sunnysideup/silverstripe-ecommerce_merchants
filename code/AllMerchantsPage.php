@@ -366,17 +366,30 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//  =======================
 		//  DROPDOWN
 		//  =======================
+		//city
+		$cities = DataObject::get('City');
+		if($cities) {
+			$cities = $cities->map();
+		}
+		else {
+			$cities = array();
+		}
+		if(count($cities) > 1) {
+			$cities = array( 0 => _t("Merchants.ALL_CITIES", "-- All Cities")) + $cities;
+		}
 		//category
-		$categories = DataObject::get('Category');
+		$categories = Category::categories_for_city($this->cityID);
 		if($categories) {
 			$categories = $categories->map('ID', 'Name');
 		}
 		else {
 			$categories = array();
 		}
-		$categories = array( 0 => _t("Merchants.ALL_CATEGORIES", "-- All Categories")) + $categories;
+		if(count($categories) > 1) {
+			$categories = array( 0 => _t("Merchants.ALL_CATEGORIES", "-- All Categories")) + $categories;
+		}
 		//merchants
-		$merchantPages = DataObject::get('MerchantPage', MerchantPage::get_active_filter());
+		$merchantPages = MerchantPage::merchant_pages_for_city($this->cityID, $this->categoryID);
 		if($merchantPages) {
 			$merchantPages = $merchantPages->map();
 		}
@@ -386,15 +399,6 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		if(count($merchantPages) > 1) {
 			$merchantPages = array( 0 => _t("Merchants.ALL_MERCHANTS", "-- All Merchants")) + $merchantPages;
 		}
-		//city
-		$cities = DataObject::get('City');
-		if($cities) {
-			$cities = $cities->map();
-		}
-		else {
-			$cities = array();
-		}
-		$cities = array( 0 => _t("Merchants.ALL_CITIES", "-- All Cities")) + $cities;
 		//priceOptionsFrom
 		$priceOptionsFrom = DataObject::get('MerchantPriceOption', "ShowInFrom = 1", "DefaultFrom ASC, Price ASC");
 		if($priceOptionsFrom) {
@@ -417,12 +421,17 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//==============================
 		// CREATE DROPDOWNS
 		//==============================
+		$cityID = (isset($cities[$this->cityID]) ? $this->cityID : 0);
+		$categoryID = (isset($categories[$this->categoryID]) ? $this->categoryID : 0);
+		$merchantPageID = (isset($merchantPages[$this->merchantPageID]) ? $this->merchantPageID : 0);
+		$priceFrom = (isset($priceOptionsFrom[$this->priceFrom]) ? $this->priceFrom : 0);
+		$priceUpTo = (isset($priceOptionsUpTo[$this->priceUpTo]) ? $this->priceUpTo : 0);
 		$fields = new FieldSet(
-			new Dropdownfield(self::get_city_param(), _t("Merchants.SELECT_LOCATION", "Select Location"), $cities, $this->cityID),
-			new Dropdownfield(self::get_category_param(), _t("Merchants.SELECT_CATEGORY", "Select Category"), $categories, $this->categoryID),
-			new Dropdownfield(self::get_merchant_page_param(), _t("Merchants.SELECT_MERCHANT", "Select Merchant"), $merchantPages, $this->merchantPageID),
-			new Dropdownfield(self::get_price_from_param(), _t("Merchants.PRICE_FROM", "Price From"), $priceOptionsFrom, $this->priceFrom),
-			new Dropdownfield(self::get_price_upto_param(), _t("Merchants.PRICE_UNTIL", "Price Until"), $priceOptionsUpTo, $this->priceUpTo),
+			new Dropdownfield(self::get_city_param(), _t("Merchants.SELECT_LOCATION", "Select Location"), $cities, $cityID),
+			new Dropdownfield(self::get_category_param(), _t("Merchants.SELECT_CATEGORY", "Select Category"), $categories, $categoryID),
+			new Dropdownfield(self::get_merchant_page_param(), _t("Merchants.SELECT_MERCHANT", "Select Merchant"), $merchantPages, $merchantPageID),
+			new Dropdownfield(self::get_price_from_param(), _t("Merchants.PRICE_FROM", "Price From"), $priceOptionsFrom, $priceFrom),
+			new Dropdownfield(self::get_price_upto_param(), _t("Merchants.PRICE_UNTIL", "Price Until"), $priceOptionsUpTo, $priceUpTo),
 			new LiteralField("AllMerchantsPageLoadingHolder", "<div class=\"allMerchantsPageLoadingHolder\">&nbsp;</div>")
 		);
 		//reset City Form (needed to avoid discrepancies when using the Back Button)
@@ -435,7 +444,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//RETURN AJAX / NORMAL
 		if(Director::is_ajax()) {
 			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
-			$variablesForTemplateArray["FilterForm"] = $form;
+			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
 			return Convert::array2json($variablesForTemplateArray);
 		}
 		else {

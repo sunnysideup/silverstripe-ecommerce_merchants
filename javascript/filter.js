@@ -29,6 +29,15 @@ var AllMerchantsPageFilter = {
 
 		jQuery(form).find('select').change(
 			function() {
+				if(jQuery(this).attr("name") == "city") {
+					jQuery("#category select").val("0");
+					jQuery("#merchant select").val("0");
+				}
+				else if(jQuery(this).attr("name") == "category") {
+					jQuery("#merchant select").val("0");
+				}
+
+				AllMerchantsPageFilter.resetDropdowns();
 
 				minPrice = parseInt(jQuery("select[name='pricefrom']").val());
 				maxPrice = parseInt(jQuery("select[name='priceupto']").val());
@@ -71,6 +80,7 @@ var AllMerchantsPageFilter = {
 								jQuery('#' + id).html(html).triggerHandler('onAfterWrite');
 								AllMerchantsPageFilter.initMoreLinks('#' + id);
 								AllMerchantsPageFilter.updateLink();
+								AllMerchantsPageFilter.init();
 							}
 						);
 					}
@@ -78,10 +88,46 @@ var AllMerchantsPageFilter = {
 			}
 		);
 
-		this.initInfiniteScroll();
+		AllMerchantsPageFilter.initInfiniteScroll();
 
-		this.checkMinAndMax();
+		AllMerchantsPageFilter.checkMinAndMax();
 
+		AllMerchantsPageFilter.resetDropdowns();
+
+	},
+
+	resetDropdowns: function() {
+		var city = jQuery("#city select").val();
+		var category = jQuery("#category select").val();
+		var merchant = jQuery("#merchant select").val();
+		if(city == 0) {
+			jQuery("#category select").val("0").hide();
+			jQuery("#merchant select").val("0").hide();
+		}
+		else {
+			jQuery("#category select").show();
+			jQuery("#merchant select").show();
+			if(jQuery("#city select option[value="+city+"]").length == 0){
+				jQuery("#city select").val("0")
+			}
+		}
+		if(category == 0) {
+			jQuery("#merchant select").val("0").hide();
+		}
+		else {
+			jQuery("#category select").show();
+			if(jQuery("#category select option[value="+category+"]").length == 0){
+				jQuery("#category select").val("0")
+			}
+		}
+		if(merchant == 0) {
+			//DO NOTHING
+		}
+		else {
+			if(jQuery("#merchant select option[value="+merchant+"]").length == 0){
+				jQuery("#merchant select").val("0")
+			}
+		}
 	},
 
 	initMoreLinks: function(filter){

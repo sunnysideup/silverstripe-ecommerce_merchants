@@ -1,5 +1,24 @@
 <?php
 
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ * see: http://yuml.me/diagram/plain;dir:LR;/class/edit/[MerchantPage]%3C%3E1-%3E*[MerchantLocation],%20[City]%3C%3E1-%3E*[MerchantLocation],%20[MerchantPage]%3C%3E1-%3E*[MerchantProduct],%20[MerchantProduct]%3C%3E1-%3E*[MerchantLocation],%20[Category]*%3C--%3E*[MerchantProduct]
+ * OR: http://yuml.me/edit/18a5ec76
+		[MerchantPage]<>1->*[MerchantLocation]
+		[City]<>1->*[MerchantLocation]
+		[MerchantPage]<>1->*[MerchantProduct]
+		[MerchantProduct]<>1->*[MerchantLocation]
+		[Category]*<-->*[MerchantProduct]
+ *
+ *
+ */
+
+
 class MerchantPage extends ProductGroup {
 
 	/****************************************
@@ -52,6 +71,77 @@ class MerchantPage extends ProductGroup {
 		}
 		return $filter;
 	}
+
+
+	/**
+	 * keeps the Merchants for one city
+	 * @var Array
+	 */
+	private static $merchant_pages_for_city_cache = array();
+
+	/**
+	 * Returns ALL the categories for one city
+	 * @param Int | City $city
+	 * @param Int | Category $category
+	 * @return DataObjectSet | Null
+	 */
+	public static function merchant_pages_for_city($city, $category = 0) {
+		$resultArray = array();
+		if($city instanceOf City) {
+			$cityID = $city->ID;
+		}
+		if(is_numeric($city)) {
+			$cityID = $city;
+		}
+		if($category instanceOf City) {
+			$categoryID = $category->ID;
+		}
+		if(is_numeric($category)) {
+			$categoryID = $category;
+		}
+		$cityID = intval($cityID);
+		$categoryID = intval($categoryID);
+		if(!isset(self::$merchant_pages_for_city_cache[$cityID."_".$categoryID])) {
+			self::$merchant_pages_for_city_cache[$cityID."_".$categoryID] = null;
+			//Q1. what merchant locations are in this city?
+			if($cityID) {
+				$merchantLocations = DataObject::get("MerchantLocation", "\"CityID\" =".$cityID." AND (".MerchantLocation::get_active_filter($checkMerchant = true).") ");
+			}
+			else {
+				$merchantLocations = DataObject::get("MerchantLocation", MerchantLocation::get_active_filter($checkMerchant = true));
+			}
+			if($merchantLocations) {
+				foreach($merchantLocations as $merchantLocation) {
+					if($categoryID) {
+						//Q2. what categories are applicable for this merchant location?
+						$categories = $merchantLocation->Categories();
+						if($categories) {
+							foreach($categories as $category) {
+								if($category->ID == $categoryID) {
+									$resultArray[$merchantLocation->ParentID] = $merchantLocation->ParentID;
+									break;
+								}
+							}
+						}
+					}
+					else {
+						$resultArray[$merchantLocation->ParentID] = $merchantLocation->ParentID;
+					}
+				}
+			}
+			if(is_array($resultArray) && count($resultArray)) {
+				$stage = '';
+				//@to do - make sure products are versioned!
+				if(Versioned::current_stage() == "Live") {
+					$stage = "_Live";
+				}
+				self::$merchant_pages_for_city_cache[$cityID."_".$categoryID] = DataObject::get("MerchantPage", "\"MerchantPage".$stage."\".\"ID\" IN (".implode(",", $resultArray).") AND ( ".self::get_active_filter($checkMerchant = true)." )");
+			}
+		}
+		return self::$merchant_pages_for_city_cache[$cityID."_".$categoryID];
+	}
+
+
 
 	/****************************************
 	 * CRUD Forms

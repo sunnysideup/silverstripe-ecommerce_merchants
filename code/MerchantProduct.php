@@ -11,11 +11,14 @@ class MerchantProduct extends Product {
 	);
 
 	protected static $active_filter = 'ShowInSearch = 1 AND AllowPurchase = 1';
-	public static function get_active_filter() {
+	public static function get_active_filter($cityID = 0, $categoryID = 0) {
 		$filter = self::$active_filter;
 		$merchantID = AllMerchantsPage_Controller::get_only_show_filter();;
 		if($merchantID) {
 			$filter .= " AND ParentID = $merchantID";
+		}
+		if($cityID) {
+
 		}
 		return $filter;
 	}

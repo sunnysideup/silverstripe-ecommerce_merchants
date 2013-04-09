@@ -39,6 +39,53 @@ class Category extends DataObject {
 	public static $plural_name = 'Categories';
 		function i18n_plural_name() {return _t('Category.PLURALNAME', self::$plural_name);}
 
+
+	/**
+	 * keeps the categories for one city
+	 * @var Array
+	 */
+	private static $categories_for_city_cache = array();
+
+	/**
+	 * Returns ALL the categories for one city
+	 * @param Int | City $city
+	 * @return DataObjectSet | Null
+	 */
+	public static function categories_for_city($city) {
+		$resultArray = array();
+		if($city instanceOf City) {
+			$cityID = $city->ID;
+		}
+		if(is_numeric($city)) {
+			$cityID = $city;
+		}
+		if(!isset(self::$categories_for_city_cache[$cityID])) {
+			self::$categories_for_city_cache[$cityID] = null;
+			//Q1. what merchant locations are in this city?
+			if(intval($cityID) == 0) {
+				$merchantLocations = DataObject::get("MerchantLocation", MerchantLocation::get_active_filter($checkMerchant = true));
+			}
+			else {
+				$merchantLocations = DataObject::get("MerchantLocation", "CityID =".$cityID." AND ( ".MerchantLocation::get_active_filter($checkMerchant = true)." )");
+			}
+			if($merchantLocations) {
+				foreach($merchantLocations as $merchantLocation) {
+					//Q2. what categories are applicable for this merchant location?
+					$categories = $merchantLocation->Categories();
+					if($categories) {
+						foreach($categories as $category) {
+							$resultArray[$category->ID] = $category->ID;
+						}
+					}
+				}
+			}
+			if(is_array($resultArray) && count($resultArray)) {
+				self::$categories_for_city_cache[$cityID] = DataObject::get("Category", "\"Category\".\"ID\"  IN (".implode(",", $resultArray).")");
+			}
+		}
+		return self::$categories_for_city_cache[$cityID];
+	}
+
 	function Link() {
 		$page = DataObject::get_one('AllMerchantsPage');
 		if($page) {
@@ -66,9 +113,10 @@ class Category extends DataObject {
 		}
 	}
 
-
 	function getCode(){
 		return preg_replace("/[^a-zA-Z0-9\s]/", "", $this->Name);
 	}
+
+
 
 }
