@@ -34,7 +34,7 @@ var AllMerchantsPageFilter = {
 					if(jQuery("#category select option[value=0]").length == 0){
 						jQuery("#category select").prepend("<option value='0' selected='selected'>-</option>");
 					}
-					jQuery("#category select").val("0");
+					jQuery("#category select").val("0").show().focus();
 					//reset merchant
 					if(jQuery("#merchant select option[value=0]").length == 0){
 						jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
@@ -45,7 +45,7 @@ var AllMerchantsPageFilter = {
 					if(jQuery("#merchant select option[value=0]").length == 0){
 						jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
 					}
-					jQuery("#merchant select").val("0");
+					jQuery("#merchant select").val("0").show().focus();
 				}
 
 				AllMerchantsPageFilter.resetDropdowns();
@@ -112,8 +112,8 @@ var AllMerchantsPageFilter = {
 		var category = jQuery("#category select").val();
 		var merchant = jQuery("#merchant select").val();
 		if(city == 0) {
-			jQuery("#category select").val("0").hide();
-			jQuery("#merchant select").val("0").hide();
+			jQuery("#category select").val("0");//.hide();
+			jQuery("#merchant select").val("0");//.hide();
 		}
 		else {
 			jQuery("#category select").show();
@@ -123,7 +123,7 @@ var AllMerchantsPageFilter = {
 			}
 		}
 		if(category == 0) {
-			jQuery("#merchant select").val("0").hide();
+			jQuery("#merchant select").val("0");//.hide();
 		}
 		else {
 			jQuery("#category select").show();
