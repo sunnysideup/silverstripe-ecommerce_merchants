@@ -30,10 +30,21 @@ var AllMerchantsPageFilter = {
 		jQuery(form).find('select').change(
 			function() {
 				if(jQuery(this).attr("name") == "city") {
+					//reset categories
+					if(jQuery("#category select option[value=0]").length == 0){
+						jQuery("#category select").prepend("<option value='0' selected='selected'>-</option>");
+					}
 					jQuery("#category select").val("0");
+					//reset merchant
+					if(jQuery("#merchant select option[value=0]").length == 0){
+						jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
+					}
 					jQuery("#merchant select").val("0");
 				}
 				else if(jQuery(this).attr("name") == "category") {
+					if(jQuery("#merchant select option[value=0]").length == 0){
+						jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
+					}
 					jQuery("#merchant select").val("0");
 				}
 
