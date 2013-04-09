@@ -374,7 +374,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		else {
 			$cities = array();
 		}
-		if(count($cities) > 1) {
+		if(count($cities) != 1) {
 			$cities = array( 0 => _t("Merchants.ALL_CITIES", "-- All Cities")) + $cities;
 		}
 		//category
@@ -385,7 +385,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		else {
 			$categories = array();
 		}
-		if(count($categories) > 1) {
+		if(count($categories) != 1) {
 			$categories = array( 0 => _t("Merchants.ALL_CATEGORIES", "-- All Categories")) + $categories;
 		}
 		//merchants
@@ -396,7 +396,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		else {
 			$merchantPages = array();
 		}
-		if(count($merchantPages) > 1) {
+		if(count($merchantPages) != 1) {
 			$merchantPages = array( 0 => _t("Merchants.ALL_MERCHANTS", "-- All Merchants")) + $merchantPages;
 		}
 		//priceOptionsFrom
