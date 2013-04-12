@@ -367,38 +367,32 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//  DROPDOWN
 		//  =======================
 		//city
-		$cities = DataObject::get('City');
+		$cities = City::cities_for_category_and_merchant_page($this->categoryID, $this->merchantPageID);
 		if($cities) {
 			$cities = $cities->map();
 		}
 		else {
 			$cities = array();
 		}
-		if(count($cities) != 1) {
-			$cities = array( 0 => _t("Merchants.ALL_CITIES", "-- All Cities")) + $cities;
-		}
+		$cities = array( 0 => _t("Merchants.ALL_CITIES", "-- All Cities")) + $cities;
 		//category
-		$categories = Category::categories_for_city($this->cityID);
+		$categories = Category::categories_for_city_and_merchant_page($this->cityID, $this->merchantPageID);
 		if($categories) {
 			$categories = $categories->map('ID', 'Name');
 		}
 		else {
 			$categories = array();
 		}
-		if(count($categories) != 1) {
-			$categories = array( 0 => _t("Merchants.ALL_CATEGORIES", "-- All Categories")) + $categories;
-		}
+		$categories = array( 0 => _t("Merchants.ALL_CATEGORIES", "-- All Categories")) + $categories;
 		//merchants
-		$merchantPages = MerchantPage::merchant_pages_for_city($this->cityID, $this->categoryID);
+		$merchantPages = MerchantPage::merchant_pages_for_city_and_category_cache($this->cityID, $this->categoryID);
 		if($merchantPages) {
 			$merchantPages = $merchantPages->map();
 		}
 		else {
 			$merchantPages = array();
 		}
-		if(count($merchantPages) != 1) {
-			$merchantPages = array( 0 => _t("Merchants.ALL_MERCHANTS", "-- All Merchants")) + $merchantPages;
-		}
+		$merchantPages = array( 0 => _t("Merchants.ALL_MERCHANTS", "-- All Merchants")) + $merchantPages;
 		//priceOptionsFrom
 		$priceOptionsFrom = DataObject::get('MerchantPriceOption', "ShowInFrom = 1", "DefaultFrom ASC, Price ASC");
 		if($priceOptionsFrom) {

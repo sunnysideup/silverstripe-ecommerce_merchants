@@ -77,15 +77,15 @@ class MerchantPage extends ProductGroup {
 	 * keeps the Merchants for one city
 	 * @var Array
 	 */
-	private static $merchant_pages_for_city_cache = array();
+	private static $merchant_pages_for_city_and_category_cache = array();
 
 	/**
-	 * Returns ALL the categories for one city
+	 * Returns ALL the categories for one city and one category
 	 * @param Int | City $city
 	 * @param Int | Category $category
 	 * @return DataObjectSet | Null
 	 */
-	public static function merchant_pages_for_city($city, $category = 0) {
+	public static function merchant_pages_for_city_and_category_cache($city = 0, $category = 0) {
 		$resultArray = array();
 		if($city instanceOf City) {
 			$cityID = $city->ID;
@@ -93,16 +93,15 @@ class MerchantPage extends ProductGroup {
 		if(is_numeric($city)) {
 			$cityID = $city;
 		}
-		if($category instanceOf City) {
+		if($category instanceOf Category) {
 			$categoryID = $category->ID;
 		}
 		if(is_numeric($category)) {
 			$categoryID = $category;
 		}
-		$cityID = intval($cityID);
-		$categoryID = intval($categoryID);
-		if(!isset(self::$merchant_pages_for_city_cache[$cityID."_".$categoryID])) {
-			self::$merchant_pages_for_city_cache[$cityID."_".$categoryID] = null;
+		$key = $cityID."_".$categoryID;
+		if(!isset(self::$merchant_pages_for_city_and_category_cache[$key])) {
+			self::$merchant_pages_for_city_and_category_cache[$key] = null;
 			//Q1. what merchant locations are in this city?
 			if($cityID) {
 				$merchantLocations = DataObject::get("MerchantLocation", "\"CityID\" =".$cityID." AND (".MerchantLocation::get_active_filter($checkMerchant = true).") ");
@@ -135,10 +134,10 @@ class MerchantPage extends ProductGroup {
 				if(Versioned::current_stage() == "Live") {
 					$stage = "_Live";
 				}
-				self::$merchant_pages_for_city_cache[$cityID."_".$categoryID] = DataObject::get("MerchantPage", "\"MerchantPage".$stage."\".\"ID\" IN (".implode(",", $resultArray).") AND ( ".self::get_active_filter($checkMerchant = true)." )");
+				self::$merchant_pages_for_city_and_category_cache[$key] = DataObject::get("MerchantPage", "\"MerchantPage".$stage."\".\"ID\" IN (".implode(",", $resultArray).") AND ( ".self::get_active_filter($checkMerchant = true)." )");
 			}
 		}
-		return self::$merchant_pages_for_city_cache[$cityID."_".$categoryID];
+		return self::$merchant_pages_for_city_and_category_cache[$key];
 	}
 
 

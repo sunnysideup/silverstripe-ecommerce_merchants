@@ -41,17 +41,18 @@ class Category extends DataObject {
 
 
 	/**
-	 * keeps the categories for one city
+	 * keeps the categories for one city and one merchant
 	 * @var Array
 	 */
-	private static $categories_for_city_cache = array();
+	private static $categories_for_city_and_merchant_page_cache = array();
 
 	/**
-	 * Returns ALL the categories for one city
+	 * Returns ALL the categories for one city and one merchant
 	 * @param Int | City $city
+	 * @param Int | MerchantPage $merchantPage
 	 * @return DataObjectSet | Null
 	 */
-	public static function categories_for_city($city) {
+	public static function categories_for_city_and_merchant_page($city = 0, $merchantPage = 0) {
 		$resultArray = array();
 		if($city instanceOf City) {
 			$cityID = $city->ID;
@@ -59,31 +60,47 @@ class Category extends DataObject {
 		if(is_numeric($city)) {
 			$cityID = $city;
 		}
-		if(!isset(self::$categories_for_city_cache[$cityID])) {
-			self::$categories_for_city_cache[$cityID] = null;
-			//Q1. what merchant locations are in this city?
-			if(intval($cityID) == 0) {
-				$merchantLocations = DataObject::get("MerchantLocation", MerchantLocation::get_active_filter($checkMerchant = true));
+		if($merchantPage instanceOf MerchantPage) {
+			$merchantPageID = $merchantPage->ID;
+		}
+		if(is_numeric($merchantPage)) {
+			$merchantPageID = $merchantPage;
+		}
+		$key = $cityID."_".$merchantPageID;
+		if(!isset(self::$categories_for_city_and_merchant_page_cache[$key])) {
+			if(!$cityID && !$merchantPageID) {
+				self::$categories_for_city_and_merchant_page_cache[$key] = DataObject::get("Category");
 			}
 			else {
-				$merchantLocations = DataObject::get("MerchantLocation", "CityID =".$cityID." AND ( ".MerchantLocation::get_active_filter($checkMerchant = true)." )");
-			}
-			if($merchantLocations) {
-				foreach($merchantLocations as $merchantLocation) {
-					//Q2. what categories are applicable for this merchant location?
-					$categories = $merchantLocation->Categories();
-					if($categories) {
-						foreach($categories as $category) {
-							$resultArray[$category->ID] = $category->ID;
+				self::$categories_for_city_and_merchant_page_cache[$key] = null;
+				//Q1. what merchant locations are in this city?
+				$merchantPageWhere = "";
+				if($merchantPageID) {
+					$merchantPageWhere = "  AND (\"ParentID\" = ".$merchantPageID.")";
+				}
+				if(intval($cityID) == 0) {
+					$merchantLocations = DataObject::get("MerchantLocation", MerchantLocation::get_active_filter($checkMerchant = true)."  ".$merchantPageWhere."  ");
+				}
+				else {
+					$merchantLocations = DataObject::get("MerchantLocation", "CityID =".$cityID." AND ( ".MerchantLocation::get_active_filter($checkMerchant = true)." ) ".$merchantPageWhere." ");
+				}
+				if($merchantLocations) {
+					foreach($merchantLocations as $merchantLocation) {
+						//Q2. what categories are applicable for this merchant location?
+						$categories = $merchantLocation->Categories();
+						if($categories) {
+							foreach($categories as $category) {
+								$resultArray[$category->ID] = $category->ID;
+							}
 						}
 					}
 				}
-			}
-			if(is_array($resultArray) && count($resultArray)) {
-				self::$categories_for_city_cache[$cityID] = DataObject::get("Category", "\"Category\".\"ID\"  IN (".implode(",", $resultArray).")");
+				if(is_array($resultArray) && count($resultArray)) {
+					self::$categories_for_city_and_merchant_page_cache[$key] = DataObject::get("Category", "\"Category\".\"ID\"  IN (".implode(",", $resultArray).")");
+				}
 			}
 		}
-		return self::$categories_for_city_cache[$cityID];
+		return self::$categories_for_city_and_merchant_page_cache[$key];
 	}
 
 	function Link() {
