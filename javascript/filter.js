@@ -29,26 +29,29 @@ var AllMerchantsPageFilter = {
 
 		jQuery(form).find('select').change(
 			function() {
-				if(jQuery(this).attr("name") == "city") {
-					//reset categories
-					if(jQuery("#category select option[value=0]").length == 0){
-						jQuery("#category select").prepend("<option value='0' selected='selected'>-</option>");
+				if(jQuery(this).val() == 0) {
+					//if city is changed to nothing than reset category and merchant
+					if(jQuery(this).attr("name") == "city") {
+						//reset categories
+						if(jQuery("#category select option[value=0]").length == 0){
+							jQuery("#category select").prepend("<option value='0' selected='selected'>-</option>");
+						}
+						jQuery("#category select").val("0").show().focus();
+						//reset merchant
+						if(jQuery("#merchant select option[value=0]").length == 0){
+							jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
+						}
+						jQuery("#merchant select").val("0");
 					}
-					jQuery("#category select").val("0").show().focus();
-					//reset merchant
-					if(jQuery("#merchant select option[value=0]").length == 0){
-						jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
+					else if(jQuery(this).attr("name") == "category") {
+						if(jQuery("#merchant select option[value=0]").length == 0){
+							jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
+						}
+						jQuery("#merchant select").val("0").show().focus();
 					}
-					jQuery("#merchant select").val("0");
-				}
-				else if(jQuery(this).attr("name") == "category") {
-					if(jQuery("#merchant select option[value=0]").length == 0){
-						jQuery("#merchant select").prepend("<option value='0' selected='selected'>-</option>");
-					}
-					jQuery("#merchant select").val("0").show().focus();
 				}
 
-				AllMerchantsPageFilter.resetDropdowns();
+				//AllMerchantsPageFilter.resetDropdowns();
 
 				minPrice = parseInt(jQuery("select[name='pricefrom']").val());
 				maxPrice = parseInt(jQuery("select[name='priceupto']").val());
@@ -103,7 +106,7 @@ var AllMerchantsPageFilter = {
 
 		AllMerchantsPageFilter.checkMinAndMax();
 
-		AllMerchantsPageFilter.resetDropdowns();
+		//AllMerchantsPageFilter.resetDropdowns();
 
 	},
 
