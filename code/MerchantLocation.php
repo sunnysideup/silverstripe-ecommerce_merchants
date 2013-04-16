@@ -439,8 +439,10 @@ class MerchantLocation_Controller extends ProductGroup_Controller {
 				$form->saveInto($this->dataRecord);
 				$this->MenuTitle = $this->Title; // Copy of the title on the menu title
 				$this->dataRecord->URLSegment = null; // To reset the value of the URLSegment in the onBeforeWrite of SiteTree
-				$this->writeToStage('Stage');
-				$this->Publish('Stage', 'Live');
+				$page->writeToStage('Stage');
+				$page->Publish('Stage', 'Live');
+				$page->Status = "Published";
+				$page->flushCache();
 				$form->sessionMessage(_t('MerchantLocation_Controller.EDIT_SUCCESS', 'Your store details have been saved successfully.'), 'good');
 			} catch (ValidationException $e) {
 				$form->sessionMessage(_t('MerchantLocation_Controller.SAVE_STORE_DETAILS_ERROR', 'Your store details could not be saved.'), 'bad');

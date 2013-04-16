@@ -17,9 +17,6 @@ class MerchantProduct extends Product {
 		if($merchantID) {
 			$filter .= " AND ParentID = $merchantID";
 		}
-		if($cityID) {
-
-		}
 		return $filter;
 	}
 
@@ -203,6 +200,21 @@ class MerchantProduct_Controller extends Product_Controller {
 			$this->Publish('Stage', 'Live');
 		}
 		return Director::redirect($this->Parent()->Link());
+	}
+
+	function saveallproducts(){
+		$merchantProducts = DataObject::get("MerchantProduct");
+		if($merchantProducts) {
+			foreach($merchantProducts as $merchantProduct) {
+				if($merchantProduct->IsPublished()) {
+					$merchantProduct->writeToStage('Stage');
+					$merchantProduct->Publish('Stage', 'Live');
+					$merchantProduct->Status = "Published";
+					$merchantProduct->flushCache();
+					DB::alteration_message("publishing ".$merchantProduct->Title." - ".$merchantProduct->Title);
+				}
+			}
+		}
 	}
 
 }
