@@ -19,7 +19,7 @@ class MerchantPriceOption extends DataObject {
 		'PriceInt' => 'Int'
 	);
 
-	static $summaryfields = array(
+	static $summary_fields = array(
 		'Price' => 'Price',
 		'ShowInFrom' => 'Boolean',
 		'ShowInUpTo' => 'Boolean',

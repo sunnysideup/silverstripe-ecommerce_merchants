@@ -106,7 +106,7 @@ class MerchantLocation extends ProductGroup {
 		if($this->ID) {
 			$products = DataObject::get('MerchantProduct', "ParentID = $this->ParentID");
 			if($products) {
-				$productHeader = new HeaderField('Products', _t('MerchantLocation.PRODUCTS', 'Products'));
+				$productHeader = new HeaderField('ProductHeader', _t('MerchantLocation.PRODUCTS', 'Products'));
 				$productSelector = new CheckboxSetField('AlsoShowProducts', '', $products);
 			}
 		}
