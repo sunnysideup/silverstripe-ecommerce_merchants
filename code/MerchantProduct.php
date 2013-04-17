@@ -145,10 +145,10 @@ class MerchantProduct extends Product {
 			$locations = DataObject::get('MerchantLocation', "ParentID = $this->ParentID");;
 			if($locations) {
 				$locations = implode(',', $locations->map('ID', 'ID'));
-				$filter = " AND ProductGroupID NOT IN ($locations)";
+				$filter = " AND \"ProductGroupID\" NOT IN ($locations)";
 			}
 		}
-		DB::query("DELETE FROM Product_ProductGroups WHERE ProductID = $this->ID $filter");
+		DB::query("DELETE FROM \"Product_ProductGroups\" WHERE \"ProductID\" = $this->ID $filter");
 	}
 
 }
