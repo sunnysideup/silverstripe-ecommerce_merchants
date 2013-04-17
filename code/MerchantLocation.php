@@ -101,6 +101,15 @@ class MerchantLocation extends ProductGroup {
 	function getFrontEndFields() {
 		$cities = DataObject::get('City');
 		$cities = $cities->map('ID', 'Name');
+		$productHeader = new HiddenField("ProductHeaderHidden");
+		$productSelector = new HiddenField("ProductSelector");
+		if($this->ID) {
+			$products = DataObject::get('MerchantProduct', "ParentID = $this->ParentID");
+			if($products) {
+				$productHeader = new HeaderField('Products', _t('MerchantLocation.PRODUCTS', 'Products'));
+				$productSelector = new CheckboxSetField('AlsoShowProducts', '', $products);
+			}
+		}
 		$fields = new FieldSet(
 			new TextField('Title', $this->fieldLabel('Title')),
 			//new CheckboxField('Featured', _t('MerchantLocation.IS_FEATURED', 'Featured Location')),
@@ -116,7 +125,9 @@ class MerchantLocation extends ProductGroup {
 			new SimpleImageField('AdditionalImage1', _t('MerchantLocation.IMAGE', 'IMAGE')." 2"),
 			new SimpleImageField('AdditionalImage2', _t('MerchantLocation.IMAGE', 'IMAGE')." 3"),
 			new SimpleImageField('AdditionalImage3', _t('MerchantLocation.IMAGE', 'IMAGE')." 4"),
-			new SimpleImageField('AdditionalImage4', _t('MerchantLocation.IMAGE', 'IMAGE')." 5")
+			new SimpleImageField('AdditionalImage4', _t('MerchantLocation.IMAGE', 'IMAGE')." 5"),
+			$productHeader,
+			$productSelector
 		);
 		$requiredFields = new RequiredFields('Title', 'Address', 'CityID');
 		return array($fields, $requiredFields);
@@ -162,16 +173,16 @@ class MerchantLocation extends ProductGroup {
 
 	function onAfterWrite() {
 		parent::onAfterWrite();
-		$parent = $this->Parent();
+		$parent = DataObject::get_by_id("MerchantPage", $this->ParentID);
 		$filter = '';
-		if($parent->exists() && is_a($parent, self::$default_parent)) {
-			$products = DataObject::get('MerchantProduct', "ParentID = $this->ParentID");
+		if($parent) {
+			$products = DataObject::get('MerchantProduct', "\"ParentID\" = $this->ParentID");
 			if($products) {
 				$products = implode(',', $products->map('ID', 'ID'));
-				$filter = " AND ProductID NOT IN ($products)";
+				$filter = " AND \"ProductID\" NOT IN ($products)";
 			}
 		}
-		DB::query("DELETE FROM Product_ProductGroups WHERE ProductGroupID = $this->ID$filter");
+		DB::query("DELETE FROM \"Product_ProductGroups\" WHERE \"ProductGroupID\" = $this->ID$filter");
 	}
 
 	/****************************************

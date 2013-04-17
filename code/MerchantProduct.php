@@ -55,7 +55,7 @@ class MerchantProduct extends Product {
 			$parent = $this->Parent();
 			$locations = $parent->Locations();
 			if($locations) {
-				$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('ProductGroups', _t('MerchantProduct.PRODUCTGROUPS', 'Locations'), $locations));
+				$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('ProductGroups', _t('MerchantProduct.PRODUCTGROUPS', 'Locations'), $locations->map("ID", "Title")));
 			}
 		}
 		return $fields;
@@ -69,6 +69,12 @@ class MerchantProduct extends Product {
 		$categories = DataObject::get('Category');
 		$categories = $categories->map('ID', 'Name');
 		$locations = $parent->Locations();
+		if($locations) {
+			$locations = $locations->map('ID', 'Title');
+		}
+		else {
+			$locations = array();
+		}
 		$allowPurchaseField = new CheckboxField('AllowPurchase', "<a href=\"".$this->Link()."\" taget=\"_blank\">"._t('MerchantProduct.ALLOW_PURCHASE', 'For sale')."</a>");
 		$allowPurchaseField->escape = false;
 		$fields = new FieldSet(
@@ -133,10 +139,10 @@ class MerchantProduct extends Product {
 
 	function onAfterWrite() {
 		parent::onAfterWrite();
-		$parent = DataObject::get_by_id("MerchantProduct", $this->ParentID);
+		$parent = DataObject::get_by_id("MerchantPage", $this->ParentID);
 		$filter = '';
-		if($parent && is_a($parent, self::$default_parent)) {
-			$locations = $parent->Locations();
+		if($parent) {
+			$locations = DataObject::get('MerchantLocation', "ParentID = $this->ParentID");;
 			if($locations) {
 				$locations = implode(',', $locations->map('ID', 'ID'));
 				$filter = " AND ProductGroupID NOT IN ($locations)";
