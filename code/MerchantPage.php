@@ -258,7 +258,7 @@ class MerchantPage extends ProductGroup {
 		if($mainGroup && $this->MerchantGroupCode()) {
 			if($this->CanEditType != 'OnlyTheseUsers') {
 				$this->writeToStage('Stage');
-				$this->Publish('Stage', 'Live');
+				$this->doPublish();
 			}
 		}
 	}
@@ -355,8 +355,8 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 		if($this->canFrontEndEdit()) {
 			try {
 				$form->saveInto($this->dataRecord); // Call on dataRecord to fix SimpleImageField issue
-				$this->writeToStage('Stage');
-				$this->Publish('Stage', 'Live');
+				$this->dataRecord->writeToStage('Stage');
+				$this->dataRecord->doPublish();
 				$form->sessionMessage(_t('MerchantPage_Controller.SAVE_STORE_DETAILS_SUCCESS', 'Your store details have been saved successfully.'), 'good');
 			} catch (ValidationException $e) {
 				$form->sessionMessage(_t('MerchantPage_Controller.SAVE_STORE_DETAILS_ERROR', 'Your store details could not be saved.'), 'bad');
@@ -386,7 +386,7 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 				$location->MenuTitle = $location->Title; // Copy of the title on the menu title
 				$location->ParentID = $this->ID;
 				$location->writeToStage('Stage');
-				$location->Publish('Stage', 'Live');
+				$location->doPublish();
 				return Director::redirect($location->EditLink());
 			} catch (ValidationException $e) {
 				$form->sessionMessage(_t('MerchantLocation_Controller.SAVE_STORE_DETAILS_ERROR', 'Your store details could not be saved.'), 'bad');
@@ -414,10 +414,8 @@ class MerchantPage_Controller extends ProductGroup_Controller {
 				$product->MenuTitle = $product->Title; // Copy of the title on the menu title
 				$product->ParentID = $this->ID;
 				$product->writeToStage('Stage');
-				$product->Publish('Stage', 'Live');
-
+				$product->doPublish();
 				// Second call to save categories and locations
-
 				$form->saveInto($product);
 				$product->writeToStage('Stage');
 				$product->Publish('Stage', 'Live');

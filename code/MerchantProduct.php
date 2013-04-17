@@ -133,16 +133,16 @@ class MerchantProduct extends Product {
 
 	function onAfterWrite() {
 		parent::onAfterWrite();
-		$parent = $this->Parent();
+		$parent = DataObject::get_by_id("MerchantProduct", $this->ParentID);
 		$filter = '';
-		if($parent->exists() && is_a($parent, self::$default_parent)) {
+		if($parent && is_a($parent, self::$default_parent)) {
 			$locations = $parent->Locations();
 			if($locations) {
 				$locations = implode(',', $locations->map('ID', 'ID'));
 				$filter = " AND ProductGroupID NOT IN ($locations)";
 			}
 		}
-		DB::query("DELETE FROM Product_ProductGroups WHERE ProductID = $this->ID$filter");
+		DB::query("DELETE FROM Product_ProductGroups WHERE ProductID = $this->ID $filter");
 	}
 
 }
@@ -182,8 +182,8 @@ class MerchantProduct_Controller extends Product_Controller {
 				$form->saveInto($this->dataRecord); // Call on dataRecord to fix SimpleImageField issue
 				$this->dataRecord->MenuTitle = $this->dataRecord->Title; // Copy of the title on the menu title
 				$this->dataRecord->URLSegment = null; // To reset the value of the URLSegment in the onBeforeWrite of SiteTree
-				$this->writeToStage('Stage');
-				$this->Publish('Stage', 'Live');
+				$this->dataRecord->writeToStage('Stage');
+				$this->dataRecord->doPublish();
 				$form->sessionMessage(_t('MerchantProduct_Controller.SAVE_PRODUCT_DETAILS_SUCCESS', 'Your product details have been saved successfully.'), 'good');
 			}
 			catch (ValidationException $e) {
@@ -196,24 +196,27 @@ class MerchantProduct_Controller extends Product_Controller {
 	function removeproduct($data, $form) {
 		if($this->canFrontEndEdit()) {
 			$this->dataRecord->AllowPurchase = false;
-			$this->writeToStage('Stage');
-			$this->Publish('Stage', 'Live');
+			$this->dataRecord->writeToStage('Stage');
+			$this->dataRecord->doPublish();
 		}
 		return Director::redirect($this->Parent()->Link());
 	}
 
 	function saveallproducts(){
-		$merchantProducts = DataObject::get("MerchantProduct");
-		if($merchantProducts) {
-			foreach($merchantProducts as $merchantProduct) {
-				if($merchantProduct->IsPublished()) {
-					$merchantProduct->writeToStage('Stage');
-					$merchantProduct->Publish('Stage', 'Live');
-					$merchantProduct->Status = "Published";
-					$merchantProduct->flushCache();
-					DB::alteration_message("publishing ".$merchantProduct->Title." - ".$merchantProduct->Title);
+		if(Permission::checkMember(Member::CurrentUserID(), array("ADMIN", "SITETREE_EDIT_ALL", "SHOPADMIN"))) {
+			$merchantProducts = DataObject::get("MerchantProduct");
+			if($merchantProducts) {
+				foreach($merchantProducts as $merchantProduct) {
+					if($merchantProduct->IsPublished()) {
+						$merchantProduct->writeToStage('Stage');
+						$merchantProduct->doPublish();
+						DB::alteration_message("publishing ".$merchantProduct->Title." - ".$merchantProduct->Title." - ".$merchantProduct->FullSiteTreeSort);
+					}
 				}
 			}
+		}
+		else {
+			Security::permissionFailure($this, "Please login first");
 		}
 	}
 

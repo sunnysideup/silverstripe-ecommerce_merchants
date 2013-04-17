@@ -38,6 +38,8 @@ class MerchantLocation extends ProductGroup {
 		return $filter;
 	}
 
+	protected static $maximum = 100000;
+
 	static $default_parent = 'MerchantPage';
 
 	static $allowed_children = 'none';
@@ -439,10 +441,8 @@ class MerchantLocation_Controller extends ProductGroup_Controller {
 				$form->saveInto($this->dataRecord);
 				$this->MenuTitle = $this->Title; // Copy of the title on the menu title
 				$this->dataRecord->URLSegment = null; // To reset the value of the URLSegment in the onBeforeWrite of SiteTree
-				$page->writeToStage('Stage');
-				$page->Publish('Stage', 'Live');
-				$page->Status = "Published";
-				$page->flushCache();
+				$this->dataRecord->writeToStage('Stage');
+				$this->dataRecord->doPublish();
 				$form->sessionMessage(_t('MerchantLocation_Controller.EDIT_SUCCESS', 'Your store details have been saved successfully.'), 'good');
 			} catch (ValidationException $e) {
 				$form->sessionMessage(_t('MerchantLocation_Controller.SAVE_STORE_DETAILS_ERROR', 'Your store details could not be saved.'), 'bad');
@@ -454,8 +454,8 @@ class MerchantLocation_Controller extends ProductGroup_Controller {
 	function disablelocation($data, $form) {
 		if($this->canFrontEndEdit()) {
 			$this->dataRecord->ShowInMenus = $this->dataRecord->ShowInSearch = false;
-			$this->writeToStage('Stage');
-			$this->Publish('Stage', 'Live');
+			$this->dataRecord->writeToStage('Stage');
+			$this->dataRecord->doPublish();
 			$this->dataRecord->extend('onAfterDisable');
 		}
 		return Director::redirect($this->Parent()->Link());

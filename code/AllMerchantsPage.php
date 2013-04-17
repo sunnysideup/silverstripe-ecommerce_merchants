@@ -511,7 +511,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				foreach($products as $product) {
 					if(isset($_GET["flush"])) {
 						$product->writeToStage('Stage');
-						$product->publish("Stage", "Live");
+						$product->doPublish();
 					}
 					if($product->canPurchase()) {
 						if($product->Status == "Published") {
