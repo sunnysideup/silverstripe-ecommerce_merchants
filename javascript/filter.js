@@ -182,8 +182,13 @@ var AllMerchantsPageFilter = {
 
 	updateLink: function(){
 		var obj = jQuery("#AllMerchantsPageCurrentLink a");
-		if(obj.length) {
-			window.history.replaceState('Object', '', obj.attr("href"));
+		if(obj.length && !jQuery.browser.msie) {
+			try {
+				window.history.pushState('Object', '', obj.attr("href"));
+			}
+			catch(err) {
+				//do nothing...
+			}
 		}
 	},
 
