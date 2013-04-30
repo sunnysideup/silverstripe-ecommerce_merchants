@@ -162,14 +162,6 @@ class AllMerchantsPage extends ProductGroup {
 		return $link;
 	}
 
-	/**
-	 * link Link but Absolute
-	 * @param String $action
-	 * @return String
-	 */
-	function AbsoluteLink($action = null) {
-		return Director::absoluteURL($this->Link($action));
-	}
 }
 
 class AllMerchantsPage_Controller extends ProductGroup_Controller {
