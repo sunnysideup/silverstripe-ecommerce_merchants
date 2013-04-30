@@ -153,7 +153,9 @@ class MerchantPage extends ProductGroup {
 		}
 		$fields->addFieldToTab('Root.Content.Main', new TextField('Website'), 'Content');
 		if($this->ID) {
-			$fields->addFieldToTab('Root.Content.Main', new LiteralField('OnlyShowLink', "<p class=\"message good\"><a href=\"{$this->OnlyShowLink()}\" target=\"_blank\">Only show link</a></p>"), 'Content');
+			$fields->addFieldToTab('Root.Content.OnlyShow', new LiteralField('OnlyShowLink', "<p class=\"message good\"><a href=\"{$this->OnlyShowLink()}\" target=\"_blank\"><i>Only show</i> link: ".$this->OnlyShowLink()."</a></p>"));
+			$fields->addFieldToTab('Root.Content.OnlyShow', new LiteralField('OnlyShowLinkReset', "<p class=\"message good\"><a href=\"{$this->ClearOnlyShowLink()}\" target=\"_blank\">Clear <i>only show</i> link: ".$this->ClearOnlyShowLink()."</a></p>"));
+			$fields->addFieldToTab('Root.Content.OnlyShow', new LiteralField('OnlyShowLinkShowAll', "<p class=\"message good\"><a href=\"{$this->OnlyShowLinkAll()}\" target=\"_blank\">Show all <i>only show</i> links: ".$this->OnlyShowLinkAll()."</a></p>"));
 		}
 		$fields->replaceField('Content', new TextareaField('Content', _t('MerchantPage.CONTENT', 'Content')));
 		$fields->addFieldToTab('Root.Content.Logo', new ImageField('Image', _t('MerchantPage.LOGO', 'Logo'), null, null, null, 'Logos'));
@@ -264,11 +266,27 @@ class MerchantPage extends ProductGroup {
 	}
 
 	function OnlyShowLink() {
+		if($allMerchantsPage = $this->getAllMerchantsPageForOnlyShow()) {
+			return $allMerchantsPage->AbsoluteLink("onlyshow/{$this->URLSegment}/");
+		}
+	}
+
+	function ClearOnlyShowLink() {
+		if($allMerchantsPage = $this->getAllMerchantsPageForOnlyShow()) {
+			return $allMerchantsPage->AbsoluteLink("clearonlyshow");
+		}
+	}
+
+
+	function OnlyShowLinkAll() {
+		if($allMerchantsPage = $this->getAllMerchantsPageForOnlyShow()) {
+			return $allMerchantsPage->AbsoluteLink("showallonlyshowlinks");
+		}
+	}
+
+	private function getAllMerchantsPageForOnlyShow() {
 		if(is_a($this, 'MerchantPage')) {
-			$page = DataObject::get_one('AllMerchantsPage');
-			if($page) {
-				return $page->Link("onlyshow/{$this->URLSegment}/");
-			}
+			return DataObject::get_one('AllMerchantsPage');
 		}
 	}
 

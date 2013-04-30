@@ -162,7 +162,14 @@ class AllMerchantsPage extends ProductGroup {
 		return $link;
 	}
 
-
+	/**
+	 * link Link but Absolute
+	 * @param String $action
+	 * @return String
+	 */
+	function AbsoluteLink($action) {
+		return Director::absoluteURL($this->Link($action));
+	}
 }
 
 class AllMerchantsPage_Controller extends ProductGroup_Controller {
@@ -749,5 +756,20 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		Session::clear(self::get_merchant_session_param()."_time");
 		return Director::redirectBack();
 	}
+
+	function showallonlyshowlinks(){
+		if(Permission::checkMember(Member::CurrentUserID(), array("ADMIN", "SITETREE_EDIT_ALL", "SHOPADMIN"))) {
+			$merchants = DataObject::get("MerchantPage");
+			if($merchants) {
+				foreach($merchants as $merchant) {
+					DB::alteration_message("".$merchant->Title.": <a href=\"".$merchant->OnlyShowLink()."\"><br />".$merchant->OnlyShowLink()."</a><br /><br />");
+				}
+			}
+		}
+		else {
+			Security::permissionFailure($this, "Please login first");
+		}
+	}
+
 
 }
