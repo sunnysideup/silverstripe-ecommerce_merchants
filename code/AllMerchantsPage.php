@@ -167,7 +167,7 @@ class AllMerchantsPage extends ProductGroup {
 	 * @param String $action
 	 * @return String
 	 */
-	function AbsoluteLink($action) {
+	function AbsoluteLink($action = null) {
 		return Director::absoluteURL($this->Link($action));
 	}
 }
