@@ -338,7 +338,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			);
 			$variablesForTemplateArray = $this->variablesForTemplate();
 			$variablesForTemplateArray["Products"] = self::$products_cache;
-			return str_replace("\t", "", str_replace("\n", "", $this->customise($variablesForTemplateArray)->renderWith("ProductsHolder")));
+			return $this->customise($variablesForTemplateArray)->renderWith("ProductsHolder");
 		}
 		else {
 			//$this->redirect($this->Link()."?".str_replace('&amp;', '&', $this->filterGetVariables()));
@@ -466,7 +466,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	 * @return DataObjectSet
 	 */
 	function Products($filter = null) {
-		if(self::$products_cache === null) {
+		if(self::$products_cache === null || 1 == 1) {
 			$filters = array();
 			if($filter !== null) {
 				$filters[] = $filter;
