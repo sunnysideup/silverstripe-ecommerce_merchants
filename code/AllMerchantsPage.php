@@ -506,6 +506,15 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$sort,
 				$join
 			);
+			$debug = isset($_GET["debug"]) && !Director::isLive() ? TRUE : FALSE;
+			if($debug) {
+				echo "<hr />FILTER ONE: ";
+				print_r($filter);
+				echo "<hr />SORT ONE: ";
+				print_r($sort);
+				echo "<hr />JOIN ONE: ";
+				print_r($join);
+			}
 			if($products) {
 				foreach($products as $product) {
 					if(isset($_GET["flush"])) {
@@ -516,6 +525,12 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 						if($product->Status == "Published") {
 							$this->productArray[$product->ID] = $product->ID;
 						}
+						elseif($debug) {
+							DB::alteration_message("Excluding ".$product->Title." IS NOT PUBLISHED");
+						}
+					}
+					elseif($debug) {
+						DB::alteration_message("Excluding ".$product->Title." CAN NOT PURCHASE");
 					}
 				}
 			}
@@ -528,6 +543,12 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$sortbyAndFilterIDMakerArray["Filter"],
 				$sortbyAndFilterIDMakerArray["Sort"]
 			);
+			if($debug) {
+				echo "<hr />FILTER TWO: ";
+				print_r($sortbyAndFilterIDMakerArray["Filter"]);
+				echo "<hr />SORT TWO: ";
+				print_r($sortbyAndFilterIDMakerArray["Sort"]);
+			}
 		}
 		return self::$products_cache;
 	}
