@@ -326,7 +326,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	 * @return String (HTML)
 	 */
 	function moreproducts(){
-		if(Director::is_ajax()) {
+		if(Director::is_ajax() || isset($_GET["ajax"])) {
 			$productArrayAsString = Session::get(self::get_merchant_product_session_array_name());
 			$productArray = explode(",", $productArrayAsString);
 			$this->productCount = count($productArray);
@@ -435,7 +435,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 
 	function filter($data = null, $form = null) {
 		//RETURN AJAX / NORMAL
-		if(Director::is_ajax()) {
+		if(Director::is_ajax()  || isset($_GET["ajax"]) ) {
 			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
 			return Convert::array2json($variablesForTemplateArray);
