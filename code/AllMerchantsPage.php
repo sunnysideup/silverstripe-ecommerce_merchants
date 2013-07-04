@@ -436,12 +436,13 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	function filter($data = null, $form = null) {
 		//RETURN AJAX / NORMAL
 		if(Director::is_ajax()  || isset($_GET["ajax"]) ) {
+			$products = $this->Products();
 			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
 			if($this->debugString) {
 				$variablesForTemplateArray["Debug"] = $this->debugString;
 			}
-			return str_replace("\t", "", str_replace("\n", "", Convert::array2json($variablesForTemplateArray)));
+			return Convert::array2json($variablesForTemplateArray);
 		}
 		else {
 			return Array();
@@ -466,7 +467,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	 * @return DataObjectSet
 	 */
 	function Products($filter = null) {
-		if(self::$products_cache === null || 1 == 1) {
+		if(self::$products_cache === null) {
 			$filters = array();
 			if($filter !== null) {
 				$filters[] = $filter;
