@@ -506,7 +506,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$sort,
 				$join
 			);
-			$debug = isset($_GET["debug"]) && !Director::isLive() ? TRUE : FALSE;
+			$debug = isset($_GET["debugsql"]) && !Director::isLive() ? TRUE : FALSE;
 			if($debug) {
 				echo "<hr />FILTER ONE: ";
 				print_r($filter);
