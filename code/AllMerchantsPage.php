@@ -338,7 +338,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			);
 			$variablesForTemplateArray = $this->variablesForTemplate();
 			$variablesForTemplateArray["Products"] = self::$products_cache;
-			return $this->customise($variablesForTemplateArray)->renderWith("ProductsHolder");
+			return str_replace("\t", "", str_replace("\n", "", $this->customise($variablesForTemplateArray)->renderWith("ProductsHolder")));
 		}
 		else {
 			//$this->redirect($this->Link()."?".str_replace('&amp;', '&', $this->filterGetVariables()));
@@ -438,7 +438,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		if(Director::is_ajax()  || isset($_GET["ajax"]) ) {
 			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
-			return Convert::array2json($variablesForTemplateArray);
+			return str_replace("\t", "", str_replace("\n", "", Convert::array2json($variablesForTemplateArray)));
 		}
 		else {
 			return Array();
