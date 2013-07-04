@@ -439,7 +439,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			$products = $this->Products();
 			$variablesForTemplateArray["ProductCount"] = $products->count();
 			foreach($products as $product) {
-				$dos = new DataObjetSet();
+				$dos = new DataObjectSet();
 				$dos->push($product);
 				$data = new ArrayData(array("Products" => $dos));
 				$variablesForTemplateArray["Products"] .= "<!-- $product->ID -->".$data->renderWith("ProductsHolder");
