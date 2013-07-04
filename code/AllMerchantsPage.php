@@ -437,6 +437,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		//RETURN AJAX / NORMAL
 		if(Director::is_ajax()  || isset($_GET["ajax"]) ) {
 			$products = $this->Products();
+			$variablesForTemplateArray["ProductCount"] = $products->count();
 			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
 			if($this->debugString) {

@@ -1,3 +1,4 @@
+<!-- original -->
 <% if Products %>
 <% control Products %>
 	<li class="span3 $LinkingMode $FirstLast $EvenOdd">
