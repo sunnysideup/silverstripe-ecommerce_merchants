@@ -438,6 +438,9 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		if(Director::is_ajax()  || isset($_GET["ajax"]) ) {
 			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
+			if($this->debugString) {
+				$variablesForTemplateArray["Debug"] = $this->debugString;
+			}
 			return str_replace("\t", "", str_replace("\n", "", Convert::array2json($variablesForTemplateArray)));
 		}
 		else {
@@ -454,6 +457,8 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	 * @var DataObjectSet
 	 */
 	private static $products_cache = null;
+
+	private $debugString = "";
 
 	/**
 	 *
@@ -507,13 +512,15 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$join
 			);
 			$debug = isset($_GET["debugsql"]) && !Director::isLive() ? TRUE : FALSE;
+			$debugString = "";
+			$debug = true;
 			if($debug) {
-				echo "<hr />FILTER ONE: ";
-				print_r($filter);
-				echo "<hr />SORT ONE: ";
-				print_r($sort);
-				echo "<hr />JOIN ONE: ";
-				print_r($join);
+				$debugString .= "<hr />FILTER ONE: ";
+				$debugString .= print_r($filter, 1);
+				$debugString .=  "<hr />SORT ONE: ";
+				$debugString .= print_r($sort, 1);
+				$debugString .= echo "<hr />JOIN ONE: ";
+				$debugString .= print_r($join, 1);
 			}
 			if($products) {
 				foreach($products as $product) {
@@ -526,11 +533,11 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 							$this->productArray[$product->ID] = $product->ID;
 						}
 						elseif($debug) {
-							DB::alteration_message("Excluding ".$product->Title." IS NOT PUBLISHED");
+							$debugString .= "<hr />Excluding ".$product->Title." IS NOT PUBLISHED";
 						}
 					}
 					elseif($debug) {
-						DB::alteration_message("Excluding ".$product->Title." CAN NOT PURCHASE");
+						$debugString .= "<hr />Excluding ".$product->Title." CAN NOT PURCHASE";
 					}
 				}
 			}
@@ -544,10 +551,10 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$sortbyAndFilterIDMakerArray["Sort"]
 			);
 			if($debug) {
-				echo "<hr />FILTER TWO: ";
-				print_r($sortbyAndFilterIDMakerArray["Filter"]);
-				echo "<hr />SORT TWO: ";
-				print_r($sortbyAndFilterIDMakerArray["Sort"]);
+				$debugString .= "<hr />FILTER TWO: ";
+				$debugString .= print_r($sortbyAndFilterIDMakerArray["Filter"], 1);
+				$debugString .= echo "<hr />SORT TWO: ";
+				$debugString .= print_r($sortbyAndFilterIDMakerArray["Sort"], 1);
 			}
 		}
 		return self::$products_cache;
