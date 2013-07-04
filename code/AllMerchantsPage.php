@@ -326,7 +326,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	 * @return String (HTML)
 	 */
 	function moreproducts(){
-		if(Director::is_ajax() || isset($_GET["ajax"])) {
+		if(Director::is_ajax()) {
 			$productArrayAsString = Session::get(self::get_merchant_product_session_array_name());
 			$productArray = explode(",", $productArrayAsString);
 			$this->productCount = count($productArray);
@@ -435,19 +435,9 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 
 	function filter($data = null, $form = null) {
 		//RETURN AJAX / NORMAL
-		if(Director::is_ajax()  || isset($_GET["ajax"]) ) {
-			$products = $this->Products();
-			$variablesForTemplateArray["ProductCount"] = $products->count();
-			foreach($products as $product) {
-				$dos = new DataObjectSet();
-				$dos->push($product);
-				$data = new ArrayData(array("Products" => $dos));
-				$variablesForTemplateArray["Products".$product->ID] = $data->renderWith("ProductsHolder");
-			}
+		if(Director::is_ajax()) {
+			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
-			if($this->debugString) {
-				$variablesForTemplateArray["Debug"] = $this->debugString;
-			}
 			return Convert::array2json($variablesForTemplateArray);
 		}
 		else {
@@ -464,8 +454,6 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 	 * @var DataObjectSet
 	 */
 	private static $products_cache = null;
-
-	private $debugString = "";
 
 	/**
 	 *
@@ -518,17 +506,6 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$sort,
 				$join
 			);
-			$debug = isset($_GET["debugsql"]) && !Director::isLive() ? TRUE : FALSE;
-			$this->debugString = "";
-			$debug = true;
-			if($debug) {
-				$this->debugString .= "<hr />FILTER ONE: ";
-				$this->debugString .= print_r($filter, 1);
-				$this->debugString .=  "<hr />SORT ONE: ";
-				$this->debugString .= print_r($sort, 1);
-				$this->debugString .= "<hr />JOIN ONE: ";
-				$this->debugString .= print_r($join, 1);
-			}
 			if($products) {
 				foreach($products as $product) {
 					if(isset($_GET["flush"])) {
@@ -539,12 +516,6 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 						if($product->Status == "Published") {
 							$this->productArray[$product->ID] = $product->ID;
 						}
-						elseif($debug) {
-							$this->debugString .= "<hr />Excluding ".$product->Title." IS NOT PUBLISHED";
-						}
-					}
-					elseif($debug) {
-						$this->debugString .= "<hr />Excluding ".$product->Title." CAN NOT PURCHASE";
 					}
 				}
 			}
@@ -557,12 +528,6 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$sortbyAndFilterIDMakerArray["Filter"],
 				$sortbyAndFilterIDMakerArray["Sort"]
 			);
-			if($debug) {
-				$this->debugString .= "<hr />FILTER TWO: ";
-				$this->debugString .= print_r($sortbyAndFilterIDMakerArray["Filter"], 1);
-				$this->debugString .= "<hr />SORT TWO: ";
-				$this->debugString .= print_r($sortbyAndFilterIDMakerArray["Sort"], 1);
-			}
 		}
 		return self::$products_cache;
 	}
