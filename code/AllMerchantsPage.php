@@ -512,15 +512,15 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$join
 			);
 			$debug = isset($_GET["debugsql"]) && !Director::isLive() ? TRUE : FALSE;
-			$debugString = "";
+			$this->debugString = "";
 			$debug = true;
 			if($debug) {
-				$debugString .= "<hr />FILTER ONE: ";
-				$debugString .= print_r($filter, 1);
-				$debugString .=  "<hr />SORT ONE: ";
-				$debugString .= print_r($sort, 1);
-				$debugString .= "<hr />JOIN ONE: ";
-				$debugString .= print_r($join, 1);
+				$this->debugString .= "<hr />FILTER ONE: ";
+				$this->debugString .= print_r($filter, 1);
+				$this->debugString .=  "<hr />SORT ONE: ";
+				$this->debugString .= print_r($sort, 1);
+				$this->debugString .= "<hr />JOIN ONE: ";
+				$this->debugString .= print_r($join, 1);
 			}
 			if($products) {
 				foreach($products as $product) {
@@ -533,11 +533,11 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 							$this->productArray[$product->ID] = $product->ID;
 						}
 						elseif($debug) {
-							$debugString .= "<hr />Excluding ".$product->Title." IS NOT PUBLISHED";
+							$this->debugString .= "<hr />Excluding ".$product->Title." IS NOT PUBLISHED";
 						}
 					}
 					elseif($debug) {
-						$debugString .= "<hr />Excluding ".$product->Title." CAN NOT PURCHASE";
+						$this->debugString .= "<hr />Excluding ".$product->Title." CAN NOT PURCHASE";
 					}
 				}
 			}
@@ -551,10 +551,10 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$sortbyAndFilterIDMakerArray["Sort"]
 			);
 			if($debug) {
-				$debugString .= "<hr />FILTER TWO: ";
-				$debugString .= print_r($sortbyAndFilterIDMakerArray["Filter"], 1);
-				$debugString .= "<hr />SORT TWO: ";
-				$debugString .= print_r($sortbyAndFilterIDMakerArray["Sort"], 1);
+				$this->debugString .= "<hr />FILTER TWO: ";
+				$this->debugString .= print_r($sortbyAndFilterIDMakerArray["Filter"], 1);
+				$this->debugString .= "<hr />SORT TWO: ";
+				$this->debugString .= print_r($sortbyAndFilterIDMakerArray["Sort"], 1);
 			}
 		}
 		return self::$products_cache;
