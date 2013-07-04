@@ -442,7 +442,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$dos = new DataObjectSet();
 				$dos->push($product);
 				$data = new ArrayData(array("Products" => $dos));
-				$variablesForTemplateArray["Products"] .= "<!-- $product->ID -->";
+				$variablesForTemplateArray["Products".$product->ID] = $data->renderWith("ProductsHolder");
 			}
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
 			if($this->debugString) {
