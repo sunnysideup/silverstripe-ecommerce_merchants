@@ -519,7 +519,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 				$debugString .= print_r($filter, 1);
 				$debugString .=  "<hr />SORT ONE: ";
 				$debugString .= print_r($sort, 1);
-				$debugString .= echo "<hr />JOIN ONE: ";
+				$debugString .= "<hr />JOIN ONE: ";
 				$debugString .= print_r($join, 1);
 			}
 			if($products) {
