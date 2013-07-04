@@ -553,7 +553,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 			if($debug) {
 				$debugString .= "<hr />FILTER TWO: ";
 				$debugString .= print_r($sortbyAndFilterIDMakerArray["Filter"], 1);
-				$debugString .= echo "<hr />SORT TWO: ";
+				$debugString .= "<hr />SORT TWO: ";
 				$debugString .= print_r($sortbyAndFilterIDMakerArray["Sort"], 1);
 			}
 		}
