@@ -438,6 +438,7 @@ class AllMerchantsPage_Controller extends ProductGroup_Controller {
 		if(Director::is_ajax()) {
 			$variablesForTemplateArray["Products"] = $this->renderWith("ProductsHolder");
 			$variablesForTemplateArray["Form_FilterForm"] = $this->FilterForm()->renderWith("FilterForm");
+			die("bbbbbbbbbbbbbbbbbbbbb");
 			die(print_r($variablesForTemplateArray["Products"], 1));
 			return $variablesForTemplateArray;
 		}
