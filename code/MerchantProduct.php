@@ -49,8 +49,10 @@ class MerchantProduct extends Product {
 		$fields->removeByName('AlsoShowHere');
 		$fields->replaceField('Content', new TextareaField('Content', _t('MerchantProduct.CONTENT', 'Content')));
 		$categories = DataObject::get('Category');
-		$categories = $categories->map('ID', 'Name');
-		$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('Categories', _t('MerchantProduct.CATEGORIES', 'Categories'), $categories));
+		if($categories) {
+			$categories = $categories->map('ID', 'Name');
+			$fields->addFieldToTab('Root.Content.Main', new CheckboxSetField('Categories', _t('MerchantProduct.CATEGORIES', 'Categories'), $categories));
+		}
 		if($this->ID) {
 			$parent = $this->Parent();
 			$locations = $parent->Locations();

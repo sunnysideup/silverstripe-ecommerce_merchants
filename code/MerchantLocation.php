@@ -69,7 +69,10 @@ class MerchantLocation extends ProductGroup {
 		}
 		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
 		$cities = DataObject::get('City');
-		$cities = $cities->map('ID', 'Name');
+		$cityArray = array();
+		if($cities && $cities->count()) {
+			$cityArray = $cities->map('ID', 'Name');
+		}
 		$fields->addFieldsToTab(
 			'Root.Content.Images',
 			array(
@@ -85,7 +88,7 @@ class MerchantLocation extends ProductGroup {
 			new TextField('Address', _t('MerchantLocation.ADDRESS', 'Address')),
 			new TextField('Address2', _t('MerchantLocation.ADDRESS2', 'Address Line 2')),
 			new TextField('PostalCode', _t('MerchantLocation.POSTALCODE', 'Postal Code')),
-			new DropdownField('CityID', _t('MerchantLocation.CITY', 'City'), $cities, '', null, ''),
+			new DropdownField('CityID', _t('MerchantLocation.CITY', 'City'), $cityArray, '', null, ''),
 			new TextField('Phone', _t('MerchantLocation.PHONE', 'Phone')),
 			new TextareaField('OpeningHours', _t('MerchantLocation.OPENINGHOURS', 'Opening hours'))
 		));
