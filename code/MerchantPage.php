@@ -174,6 +174,13 @@ class MerchantPage extends ProductGroup {
 		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID AND " . MerchantLocation::get_active_filter(false));
 	}
 
+	function LinkToAllMerchantsPage(){
+		$allMerchantsPage = DataObject::get_one("AllMerchantsPage");
+		if($allMerchantsPage){
+			return $allMerchantsPage->Link()."?merchant=".$this->ID;
+		}
+	}
+
 	function LocationsIncludingHiddenOnes() {
 		return DataObject::get('MerchantLocation', "\"ParentID\" = $this->ID", "\"ShowInMenus\" DESC, \"Sort\" ASC");
 	}
